@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Enums\DoctorStatus;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -10,6 +11,7 @@ use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends BaseController
 {
@@ -17,35 +19,33 @@ class AuthController extends BaseController
     {
         $credentials = $request->validated();
 
-        if (! Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
-            return $this->error(
-                ['email' => ['These credentials do not match our records.']],
-                'Invalid credentials',
-                401
+        if (auth()->attempt($credentials)) {
+            $user = auth()->user();
+            $token = $user->createToken('auth')->plainTextToken;
+            return $this->success(
+                [
+                    'user' => $user,
+                    'roles' => $user->getRoleNames()->all(),
+                    'token' => $token,
+                ]
             );
         }
 
-        $user = User::where('email', $credentials['email'])->with('roles')->firstOrFail();
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return $this->success(
-            [
-                'user' => $user,
-                'roles' => $user->getRoleNames()->all(),
-                'token' => $token,
-            ],
-            'Logged in successfully'
+        return $this->error(
+            ['email' => ['The provided credentials are incorrect.']],
+            'Invalid Credentials',
+            401
         );
     }
 
     public function registerPatient(RegisterRequest $request): JsonResponse
     {
-        $user = User::create($request->validated());
-
-        $user->assignRole('patient');
-
-        $user->patient()->save(new Patient);
+        $user = DB::transaction(function () use ($request) {
+            $user = User::create($request->validated());
+            $user->assignRole('patient');
+            $user->patient()->save(new Patient);
+            return $user;
+        });
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -55,30 +55,36 @@ class AuthController extends BaseController
                 'roles' => $user->getRoleNames()->all(),
                 'token' => $token,
             ],
-            'Patient registered successfully',
+            '',
             201
         );
     }
 
     public function registerDoctor(RegisterRequest $request): JsonResponse
     {
-        $user = User::create($request->validated());
+        $profile = DB::transaction(function () use ($request) {
+            $user = User::create($request->validated());
+            $user->assignRole('doctor');
 
-        $user->assignRole('doctor');
+            $doctor = new Doctor(['status' => DoctorStatus::PendingVerification->value]);
+            $user->doctor()->save($doctor);
 
-        $doctor = new Doctor(['status' => 'PENDING_VERIFICATION']);
-        $user->doctor()->save($doctor);
+            return [
+                "user" => $user,
+                "doctor" => $doctor
+            ];
+        });
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $profile->user->createToken('auth_token')->plainTextToken;
 
         return $this->success(
             [
-                'user' => $user,
-                'roles' => $user->getRoleNames()->all(),
-                'doctor' => $doctor,
+                'user' => $profile->user,
+                'roles' => $profile->user->getRoleNames()->all(),
+                'doctor' => $profile->doctor,
                 'token' => $token,
             ],
-            'Doctor registered successfully',
+            '',
             201
         );
     }

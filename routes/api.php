@@ -15,3 +15,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/register/doctor', [AuthController::class, 'registerDoctor']);
     });
 });
+
+
+// * Test token for Doctor : 5|lj9WFVPjiEhsKeogtbaRvfwoKbPkxw5XNQtAZN1Zf79a14bb

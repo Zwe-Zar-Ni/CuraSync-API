@@ -21,4 +21,9 @@ class CustomApiException extends Exception
     {
         return $this->errors;
     }
+
+    public function getStatusCode()
+    {
+        return $this->statusCode;
+    }
 }
