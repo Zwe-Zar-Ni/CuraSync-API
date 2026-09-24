@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\Patient\AllergyController;
+use App\Http\Controllers\V1\Patient\ConditionController;
+use App\Http\Controllers\V1\Patient\ContactController;
 use App\Http\Controllers\V1\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +20,8 @@ Route::prefix('v1')->group(function () {
         Route::prefix('patients')->middleware(['role:patient'])->group(function () {
             Route::patch('/profile', [ProfileController::class, 'updatePatientProfile']);
             Route::apiResource('allergies', AllergyController::class);
+            Route::apiResource('conditions', ConditionController::class);
+            Route::apiResource('contacts', ContactController::class);
         });
 
         Route::prefix('doctors')->middleware(['role:doctor'])->group(function () {
