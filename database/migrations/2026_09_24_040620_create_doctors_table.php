@@ -20,8 +20,8 @@ return new class extends Migration
                 "INACTIVE",
                 "SUSPENDED"
             ])->default("PENDING_VERIFICATION");
-            $table->string('license_number');
-            $table->decimal('standard_consultation_fee', 10, 2);
+            $table->string('license_number')->nullable();
+            $table->decimal('standard_consultation_fee', 10, 2)->nullable();
             $table->string('bio')->nullable();
             $table->unsignedInteger('total_patient_count')->default(0);
             $table->unsignedInteger('rating_count')->default(0);
