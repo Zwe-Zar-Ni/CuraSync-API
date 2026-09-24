@@ -15,15 +15,16 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [ProfileController::class, 'show']);
 
-        Route::prefix('patient')->middleware(['role:patient'])->group(function () {
-                Route::patch('/profile', [ProfileController::class, 'updatePatientProfile']);
-                Route::apiResource('allergies', AllergyController::class);
+        Route::prefix('patients')->middleware(['role:patient'])->group(function () {
+            Route::patch('/profile', [ProfileController::class, 'updatePatientProfile']);
+            Route::apiResource('allergies', AllergyController::class);
         });
 
-        Route::prefix('doctor')->middleware(['role:doctor'])->group(function () {
-                Route::patch('/profile', [ProfileController::class, 'updateDoctorProfile']);
+        Route::prefix('doctors')->middleware(['role:doctor'])->group(function () {
+            Route::patch('/profile', [ProfileController::class, 'updateDoctorProfile']);
         });
     });
 });
 
 // * Test token for Doctor : 5|lj9WFVPjiEhsKeogtbaRvfwoKbPkxw5XNQtAZN1Zf79a14bb
+// * Test token for patient : 7|7S1TlypSdb2m5KaLzuduI0CdI9Z3vybrlJ6mSST59fe87fee

@@ -6,8 +6,7 @@ use App\Exceptions\CustomApiException;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\UpdateDoctorProfileRequest;
 use App\Http\Requests\Patient\UpdatePatientProfileRequest;
-use App\Models\Doctor;
-use App\Models\Patient;
+use App\Http\Resources\ProfileResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +15,7 @@ class ProfileController extends BaseController
 {
     public function show(Request $request): JsonResponse
     {
-        return $this->success($this->profilePayload($request->user()));
+        return $this->success(new ProfileResource($request->user()));
     }
 
     public function updatePatientProfile(UpdatePatientProfileRequest $request): JsonResponse
@@ -29,7 +28,7 @@ class ProfileController extends BaseController
         $user->patient->update(
             $request->only(['date_of_birth', 'gender', 'blood_type'])
         );
-        return $this->success($this->profilePayload($user), 'Patient profile updated successfully.');
+        return $this->success(new ProfileResource($user), 'Patient profile updated successfully.');
     }
 
     public function updateDoctorProfile(UpdateDoctorProfileRequest $request): JsonResponse
@@ -42,7 +41,7 @@ class ProfileController extends BaseController
         $user->doctor->update(
             $request->only(['license_number', 'standard_consultation_fee', 'bio'])
         );
-        return $this->success($this->profilePayload($user), 'Doctor profile updated successfully.');
+        return $this->success(new ProfileResource($user), 'Doctor profile updated successfully.');
     }
 
     private function updateUserProfile(User $user, array $data): void
@@ -51,17 +50,5 @@ class ProfileController extends BaseController
         $user->phone_number = $data['phone_number'] ?? $user->phone_number;
         $user->profile_url = $data['profile_url'] ?? $user->profile_url;
         $user->update();
-    }
-
-    private function profilePayload(User $user): array
-    {
-        $roles = $user->getRoleNames()->all();
-        return [
-            'user' => $user,
-            'roles' => $roles,
-            'profile' => collect($roles)->contains('patient') ? $user->patient : $user->doctor,
-            // 'patient' => $user->patient,
-            // 'doctor' => $user->doctor,
-        ];
     }
 }
