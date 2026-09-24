@@ -10,7 +10,6 @@ use App\Models\Doctor;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AuthController extends BaseController
@@ -22,6 +21,7 @@ class AuthController extends BaseController
         if (auth()->attempt($credentials)) {
             $user = auth()->user();
             $token = $user->createToken('auth')->plainTextToken;
+
             return $this->success(
                 [
                     'user' => $user,
@@ -44,6 +44,7 @@ class AuthController extends BaseController
             $user = User::create($request->validated());
             $user->assignRole('patient');
             $user->patient()->save(new Patient);
+
             return $user;
         });
 
@@ -70,8 +71,8 @@ class AuthController extends BaseController
             $user->doctor()->save($doctor);
 
             return [
-                "user" => $user,
-                "doctor" => $doctor
+                'user' => $user,
+                'doctor' => $doctor,
             ];
         });
 
