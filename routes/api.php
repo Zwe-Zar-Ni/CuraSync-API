@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\Doctor\DoctorSpecialtyController;
+use App\Http\Controllers\V1\Doctor\QualificationController;
+use App\Http\Controllers\V1\Doctor\ScheduleController;
+use App\Http\Controllers\V1\Doctor\ScheduleOverrideController;
 use App\Http\Controllers\V1\Patient\AllergyController;
 use App\Http\Controllers\V1\Patient\ConditionController;
 use App\Http\Controllers\V1\Patient\ContactController;
@@ -19,6 +23,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('patients')->middleware(['role:patient'])->group(function () {
             Route::patch('/profile', [ProfileController::class, 'updatePatientProfile']);
+
             Route::apiResource('allergies', AllergyController::class);
             Route::apiResource('conditions', ConditionController::class);
             Route::apiResource('contacts', ContactController::class);
@@ -26,6 +31,13 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('doctors')->middleware(['role:doctor'])->group(function () {
             Route::patch('/profile', [ProfileController::class, 'updateDoctorProfile']);
+
+            Route::apiResource('qualifications', QualificationController::class);
+            Route::apiResource('schedules', ScheduleController::class);
+            Route::apiResource('schedule-overrides', ScheduleOverrideController::class);
+
+            Route::post('specialties', [DoctorSpecialtyController::class, 'store']);
+            Route::delete('specialties/{specialty}', [DoctorSpecialtyController::class, 'destroy']);
         });
     });
 });

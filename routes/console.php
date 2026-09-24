@@ -20,7 +20,7 @@ Artisan::command('roles:create', function () {
 })->purpose('Create the patient, doctor, and admin roles');
 
 Artisan::command('create:admin', function () {
-    $user = User::create([
+    $user = User::firstOrCreate([
         'name' => 'Admin',
         'email' => 'admin@example.com',
         'password' => Hash::make('password'),
