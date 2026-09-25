@@ -18,6 +18,7 @@ class DoctorSpecialtyController extends BaseController
     public function index(Request $request): JsonResponse
     {
         $specialties = DoctorSpecialty::where('doctor_id', $this->getDoctorId($request))->with('specialization')->latest()->get();
+
         return $this->success($specialties);
     }
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('doctor_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('doctor_id')->constrained()->cascadeOnDelete();
-            $table->enum('day_of_week' , [0, 1, 2, 3, 4, 5, 6]); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            $table->enum('day_of_week', [0, 1, 2, 3, 4, 5, 6]); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
             $table->time('start_time');
             $table->time('end_time');
             $table->unsignedTinyInteger('slot_duration_minutes')->default(15);

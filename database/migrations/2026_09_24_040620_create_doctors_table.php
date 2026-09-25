@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->enum('status', [
-                "ACTIVE",
-                "PENDING_VERIFICATION",
-                "INACTIVE",
-                "SUSPENDED"
-            ])->default("PENDING_VERIFICATION");
+                'ACTIVE',
+                'PENDING_VERIFICATION',
+                'INACTIVE',
+                'SUSPENDED',
+            ])->default('PENDING_VERIFICATION');
             $table->string('license_number')->nullable();
             $table->decimal('standard_consultation_fee', 10, 2)->nullable();
             $table->string('bio')->nullable();

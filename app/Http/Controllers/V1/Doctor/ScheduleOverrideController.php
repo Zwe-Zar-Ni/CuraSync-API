@@ -31,10 +31,10 @@ class ScheduleOverrideController extends BaseController
             'doctor_id' => $doctorId,
             'date' => $req['date'],
             'type' => $req['type'],
-            'start_time' => $req['start_time'],
-            'end_time' => $req['end_time'],
-            'slot_duration_minutes' => $req['slot_duration_minutes'],
-            'reason' => $req['reason'],
+            'start_time' => $req['start_time'] ?? null,
+            'end_time' => $req['end_time'] ?? null,
+            'slot_duration_minutes' => $req['slot_duration_minutes'] ?? 15,
+            'reason' => $req['reason'] ?? null,
         ]);
 
         return $this->success($override, 'Schedule override created successfully.', 201);

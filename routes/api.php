@@ -32,11 +32,10 @@ Route::prefix('v1')->group(function () {
         Route::prefix('doctors')->middleware(['role:doctor'])->group(function () {
             Route::patch('/profile', [ProfileController::class, 'updateDoctorProfile']);
 
+            Route::apiResource('specialties', DoctorSpecialtyController::class)->except(['show', 'update']);
             Route::apiResource('qualifications', QualificationController::class);
             Route::apiResource('schedules', ScheduleController::class);
             Route::apiResource('schedule-overrides', ScheduleOverrideController::class);
-
-            Route::apiResource('specialties', DoctorSpecialtyController::class)->except(['show', 'update']);
         });
     });
 });

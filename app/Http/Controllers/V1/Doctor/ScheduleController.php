@@ -32,8 +32,8 @@ class ScheduleController extends BaseController
             'day_of_week' => $req['day_of_week'],
             'start_time' => $req['start_time'],
             'end_time' => $req['end_time'],
-            'slot_duration_minutes' => $req['slot_duration_minutes'],
-            'is_active' => $req['is_active'],
+            'slot_duration_minutes' => $req['slot_duration_minutes'] ?? 15,
+            'is_active' => false,
         ]);
 
         return $this->success($schedule, 'Schedule created successfully.', 201);

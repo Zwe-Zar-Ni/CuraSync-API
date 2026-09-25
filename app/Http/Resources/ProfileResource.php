@@ -17,19 +17,19 @@ class ProfileResource extends JsonResource
         $role = $this->getRoleNames()->first();
 
         return [
-            "user" => [
+            'user' => [
                 'id' => $this->id,
                 'name' => $this->name,
                 'email' => $this->email,
                 'phone_number' => $this->phone_number,
                 'profile_url' => $this->profile_url,
             ],
-            "role" => $role,
-            "profile" => $role === 'doctor' ? [
+            'role' => $role,
+            'profile' => $role === 'doctor' ? [
                 'id' => $this->doctor->id,
                 'status' => $this->doctor->status,
                 'license_number' => $this->doctor->license_number,
-                'standard_consultation_fee' => (float)$this->doctor->standard_consultation_fee,
+                'standard_consultation_fee' => (float) $this->doctor->standard_consultation_fee,
                 'bio' => $this->doctor->bio,
                 'total_patient_count' => $this->doctor->total_patient_count,
                 'rating_count' => $this->doctor->rating_count,

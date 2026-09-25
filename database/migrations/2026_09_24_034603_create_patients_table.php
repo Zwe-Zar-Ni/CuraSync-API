@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('date_of_birth')->nullable();
-            $table->enum('gender' , ['M' , 'F'])->nullable();
-            $table->string('blood_type' , 3)->nullable();
+            $table->enum('gender', ['M', 'F'])->nullable();
+            $table->string('blood_type', 3)->nullable();
             $table->timestamps();
         });
     }

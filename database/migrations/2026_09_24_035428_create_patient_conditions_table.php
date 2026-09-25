@@ -17,14 +17,14 @@ return new class extends Migration
             $table->string('name');
             $table->date('diagnosis_date')->nullable();
             $table->enum('status', [
-                "ACTIVE",
-                "INACTIVE",
-                "RESOLVED",
-                "REMISSION",
-                "RECURRENCE",
-                "CONFIRMED",
-                "PROVISIONAL",
-                "REFUTED"
+                'ACTIVE',
+                'INACTIVE',
+                'RESOLVED',
+                'REMISSION',
+                'RECURRENCE',
+                'CONFIRMED',
+                'PROVISIONAL',
+                'REFUTED',
             ]);
             $table->string('note')->nullable();
             $table->timestamps();

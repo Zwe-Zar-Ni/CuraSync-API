@@ -19,7 +19,6 @@ class UpdateScheduleRequest extends FormRequest
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'slot_duration_minutes' => ['nullable', 'integer', 'min:5', 'max:240'],
-            'is_active' => ['nullable', 'boolean'],
         ];
     }
 }

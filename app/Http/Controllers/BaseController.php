@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 class BaseController extends Controller
 {
-    public function baseResponse($data , $errors = [],  $message = '', $status = 200 ) {
+    public function baseResponse($data, $errors = [], $message = '', $status = 200)
+    {
         return response()->json([
             'data' => $data,
             'errors' => $errors,
@@ -13,15 +14,18 @@ class BaseController extends Controller
         ]);
     }
 
-    public function success($data , $message = '', $status = 200 ) {
-        return $this->baseResponse($data , [], $message, $status);
+    public function success($data, $message = '', $status = 200)
+    {
+        return $this->baseResponse($data, [], $message, $status);
     }
 
-    public function error($errors , $message = '', $status = 400 ) {
-        return $this->baseResponse([] , $errors, $message, $status);
+    public function error($errors, $message = '', $status = 400)
+    {
+        return $this->baseResponse([], $errors, $message, $status);
     }
 
-    public function extractPaginationMeta($data) {
+    public function extractPaginationMeta($data)
+    {
         return [
             'currentPage' => $data->currentPage(),
             'perPage' => $data->perPage(),

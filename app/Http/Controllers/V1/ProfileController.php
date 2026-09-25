@@ -22,12 +22,13 @@ class ProfileController extends BaseController
     {
         $user = $request->user();
         $this->updateUserProfile($user, $request->validated());
-        if (!$user->patient) {
+        if (! $user->patient) {
             throw new CustomApiException([], 404, 'Patient profile not found.');
         }
         $user->patient->update(
             $request->only(['date_of_birth', 'gender', 'blood_type'])
         );
+
         return $this->success(new ProfileResource($user), 'Patient profile updated successfully.');
     }
 
@@ -41,6 +42,7 @@ class ProfileController extends BaseController
         $user->doctor->update(
             $request->only(['license_number', 'standard_consultation_fee', 'bio'])
         );
+
         return $this->success(new ProfileResource($user), 'Doctor profile updated successfully.');
     }
 

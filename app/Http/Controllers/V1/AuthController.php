@@ -24,7 +24,7 @@ class AuthController extends BaseController
             $token = $user->createToken('auth')->plainTextToken;
 
             return $this->success([
-                "data" => new ProfileResource($user),
+                'data' => new ProfileResource($user),
                 'token' => $token,
             ]);
         }
@@ -42,15 +42,16 @@ class AuthController extends BaseController
             $user = User::create($request->validated());
             $user->assignRole('patient');
             $user->patient()->save(new Patient);
+
             return $user;
         });
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return $this->success([
-            "data" => new ProfileResource($user),
+            'data' => new ProfileResource($user),
             'token' => $token,
-        ], "", 201);
+        ], '', 201);
     }
 
     public function registerDoctor(RegisterRequest $request): JsonResponse
@@ -60,13 +61,14 @@ class AuthController extends BaseController
             $user->assignRole('doctor');
             $doctor = new Doctor(['status' => DoctorStatus::PendingVerification->value]);
             $user->doctor()->save($doctor);
+
             return $user;
         });
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return $this->success([
-            "data" => new ProfileResource($user),
+            'data' => new ProfileResource($user),
             'token' => $token,
         ]);
     }

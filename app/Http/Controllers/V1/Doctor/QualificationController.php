@@ -32,7 +32,7 @@ class QualificationController extends BaseController
             'name' => $req['name'],
             'institution' => $req['institution'],
             'year' => $req['year'],
-            'certificate_url' => $req['certificate_url'],
+            'certificate_url' => $req['certificate_url'] ?? null,
         ]);
 
         return $this->success($qualification, 'Qualification created successfully.', 201);
