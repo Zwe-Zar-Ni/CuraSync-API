@@ -15,6 +15,12 @@ class DoctorSpecialtyController extends BaseController
         return $request->user()->doctor?->id ?? 0;
     }
 
+    public function index(Request $request): JsonResponse
+    {
+        $specialties = DoctorSpecialty::where('doctor_id', $this->getDoctorId($request))->with('specialization')->latest()->get();
+        return $this->success($specialties);
+    }
+
     public function store(StoreDoctorSpecialtyRequest $request): JsonResponse
     {
         $req = $request->validated();

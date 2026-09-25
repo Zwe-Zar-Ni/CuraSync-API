@@ -36,8 +36,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('schedules', ScheduleController::class);
             Route::apiResource('schedule-overrides', ScheduleOverrideController::class);
 
-            Route::post('specialties', [DoctorSpecialtyController::class, 'store']);
-            Route::delete('specialties/{specialty}', [DoctorSpecialtyController::class, 'destroy']);
+            Route::apiResource('specialties', DoctorSpecialtyController::class)->except(['show', 'update']);
         });
     });
 });

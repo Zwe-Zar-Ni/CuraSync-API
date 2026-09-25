@@ -30,9 +30,9 @@ class ConditionController extends BaseController
         $condition = PatientCondition::create([
             'patient_id' => $patientId,
             'name' => $req['name'],
-            'diagnosis_date' => $req['diagnosis_date'],
+            'diagnosis_date' => $req['diagnosis_date'] ?? null,
             'status' => $req['status'],
-            'note' => $req['note'],
+            'note' => $req['note'] ?? null,
         ]);
 
         return $this->success($condition, 'Condition created successfully.', 201);

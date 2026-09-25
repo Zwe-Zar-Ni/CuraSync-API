@@ -31,8 +31,8 @@ class ContactController extends BaseController
             'patient_id' => $patientId,
             'name' => $req['name'],
             'phone_number' => $req['phone_number'],
-            'email' => $req['email'],
-            'address' => $req['address'],
+            'email' => $req['email'] ?? null,
+            'address' => $req['address'] ?? null,
         ]);
 
         return $this->success($contact, 'Contact created successfully.', 201);

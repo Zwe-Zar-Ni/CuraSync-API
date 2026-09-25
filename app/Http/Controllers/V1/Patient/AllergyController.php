@@ -29,7 +29,7 @@ class AllergyController extends BaseController
             'patient_id' => $patientId,
             'name' => $req['name'],
             'severity' => $req['severity'],
-            'note' => $req['note'],
+            'note' => $req['note'] ?? null,
         ]);
         return $this->success($allergy, 'Allergy created successfully.', 201);
     }

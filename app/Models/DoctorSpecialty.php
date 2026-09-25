@@ -9,6 +9,8 @@ class DoctorSpecialty extends Model
 {
     protected $guarded = [];
 
+    protected $table = 'doctor_specialty';
+
     public function doctor(): BelongsTo
     {
         return $this->belongsTo(Doctor::class);
