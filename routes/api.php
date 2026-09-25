@@ -9,6 +9,7 @@ use App\Http\Controllers\V1\Patient\AllergyController;
 use App\Http\Controllers\V1\Patient\ConditionController;
 use App\Http\Controllers\V1\Patient\ContactController;
 use App\Http\Controllers\V1\ProfileController;
+use App\Http\Controllers\V1\PublicController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -37,6 +38,12 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('schedules', ScheduleController::class);
             Route::apiResource('schedule-overrides', ScheduleOverrideController::class);
         });
+    });
+
+    Route::prefix('public')->group(function () {
+        Route::get('/specializations', [PublicController::class, 'getSpecializations']);
+        Route::get('/doctors', [PublicController::class, 'getDoctors']);
+        Route::get('/doctors/{id}', [PublicController::class, 'getDoctorDetails']);
     });
 });
 
