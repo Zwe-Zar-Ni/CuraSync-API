@@ -16,6 +16,28 @@ class ProfileResource extends JsonResource
     {
         $role = $this->getRoleNames()->first();
 
+        $doctor = $this->whenLoaded('doctor', function () {
+            return [
+                'id' => $this->doctor->id,
+                'status' => $this->doctor->status,
+                'license_number' => $this->doctor->license_number,
+                'standard_consultation_fee' => (float) $this->doctor->standard_consultation_fee,
+                'bio' => $this->doctor->bio,
+                'total_patient_count' => $this->doctor->total_patient_count,
+                'rating_count' => $this->doctor->rating_count,
+                'average_rating' => (float) $this->doctor->average_rating,
+            ];
+        });
+
+        $patient = $this->whenLoaded('patient', function () {
+            return [
+                'id' => $this->patient->id,
+                'date_of_birth' => $this->patient->date_of_birth,
+                'gender' => $this->patient->gender,
+                'blood_type' => $this->patient->blood_type,
+            ];
+        });
+
         return [
             'user' => [
                 'id' => $this->id,
@@ -25,21 +47,7 @@ class ProfileResource extends JsonResource
                 'profile_url' => $this->profile_url,
             ],
             'role' => $role,
-            'profile' => $role === 'doctor' ? [
-                'id' => $this->doctor->id,
-                'status' => $this->doctor->status,
-                'license_number' => $this->doctor->license_number,
-                'standard_consultation_fee' => (float) $this->doctor->standard_consultation_fee,
-                'bio' => $this->doctor->bio,
-                'total_patient_count' => $this->doctor->total_patient_count,
-                'rating_count' => $this->doctor->rating_count,
-                'average_rating' => (float) $this->doctor->average_rating,
-            ] : [
-                'id' => $this->patient->id,
-                'date_of_birth' => $this->patient->date_of_birth,
-                'gender' => $this->patient->gender,
-                'blood_type' => $this->patient->blood_type,
-            ],
+            'profile' => $role === 'doctor' ? $doctor : $patient,
         ];
     }
 }

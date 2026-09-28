@@ -47,5 +47,5 @@ Route::prefix('v1')->group(function () {
     });
 });
 
-// * Test token for Doctor : 5|lj9WFVPjiEhsKeogtbaRvfwoKbPkxw5XNQtAZN1Zf79a14bb
-// * Test token for patient : 7|7S1TlypSdb2m5KaLzuduI0CdI9Z3vybrlJ6mSST59fe87fee
+// * Test token for Doctor : 
+// * Test token for patient : 

@@ -15,7 +15,7 @@ class ProfileController extends BaseController
 {
     public function show(Request $request): JsonResponse
     {
-        return $this->success(new ProfileResource($request->user()));
+        return $this->success(new ProfileResource($request->user()->load('doctor', 'patient')), 'Profile fetched successfully.');
     }
 
     public function updatePatientProfile(UpdatePatientProfileRequest $request): JsonResponse
