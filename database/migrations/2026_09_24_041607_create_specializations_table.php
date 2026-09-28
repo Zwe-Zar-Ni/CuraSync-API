@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 100);
             $table->string('description');
+            $table->string('icon_url')->nullable();
             $table->timestamps();
         });
     }

@@ -28,7 +28,8 @@ class SpecializationSeeder extends Seeder
         foreach ($specializations as $name => $description) {
             Specialization::updateOrCreate(
                 ['name' => $name],
-                ['description' => $description]
+                ['description' => $description],
+                ['icon_url' => 'http://localhost:8000/heart.png']
             );
         }
     }
