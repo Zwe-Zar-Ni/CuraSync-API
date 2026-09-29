@@ -12,7 +12,7 @@ class PublicController extends BaseController
 {
     public function getSpecializations()
     {
-        $specializations = Specialization::select('id', 'name')->get();
+        $specializations = Specialization::select('id', 'name', 'description', 'icon_url')->withCount('doctors')->get();
 
         return $this->success($specializations);
     }
@@ -20,12 +20,13 @@ class PublicController extends BaseController
     public function getDoctors(Request $request)
     {
         $per_page = $request->per_page ?? 15;
-        $doctors = Doctor::whereActive()->whereSpecialization($request->specialization_id)->with([
-            'user' => function ($query) {
-                $query->select('id', 'name', 'email');
-            },
-            'specializations',
-        ])->orderBy('created_at', 'asc')->paginate($per_page);
+        $doctors = Doctor::whereActive()
+            ->whereSpecialization($request->specialization_id)
+            ->with(['user', 'specializations',])
+            ->orderBy(
+                'created_at',
+                'asc'
+            )->paginate($per_page);
 
         return $this->success([
             'data' => DoctorResource::collection($doctors),
@@ -35,12 +36,7 @@ class PublicController extends BaseController
 
     public function getDoctorDetails(int $id)
     {
-        $doctor = Doctor::whereActive()->with([
-            'user' => function ($query) {
-                $query->select('id', 'name', 'email');
-            },
-            'specializations',
-        ])->find($id);
+        $doctor = Doctor::whereActive()->with(['user', 'specializations',])->find($id);
         if (! $doctor) {
             return $this->error('Doctor not found', 404);
         }

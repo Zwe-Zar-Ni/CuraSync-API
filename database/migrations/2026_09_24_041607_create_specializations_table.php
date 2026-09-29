@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('specializations', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
+            $table->string('name_mm', 100)->nullable();
             $table->string('description');
             $table->string('icon_url')->nullable();
             $table->timestamps();

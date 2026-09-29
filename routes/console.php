@@ -10,15 +10,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Artisan::command('roles:create', function () {
-    $roles = ['patient', 'doctor', 'admin'];
-
-    foreach ($roles as $role) {
-        Role::findOrCreate($role);
-        $this->info("Created role: {$role}");
-    }
-})->purpose('Create the patient, doctor, and admin roles');
-
 Artisan::command('create:admin', function () {
     $user = User::firstOrCreate([
         'name' => 'Admin',
