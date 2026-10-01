@@ -18,7 +18,7 @@ class StoreAllergyRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'severity' => ['required', Rule::enum(AllergySeverity::class)],
-            'note' => ['nullable', 'string', 'max:1000'],
+            'note' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
