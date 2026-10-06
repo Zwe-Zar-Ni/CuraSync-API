@@ -16,7 +16,7 @@ class StoreScheduleOverrideRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date' => ['required', 'date'],
+            'date' => ['required', 'date', 'after:+3 days'],
             'type' => ['required', Rule::enum(ScheduleOverrideType::class)],
             'start_time' => ['nullable', 'date_format:H:i', 'required_if:type,CUSTOM_HOURS'],
             'end_time' => ['nullable', 'date_format:H:i', 'required_if:type,CUSTOM_HOURS', 'after:start_time'],

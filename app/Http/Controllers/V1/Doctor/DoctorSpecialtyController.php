@@ -7,6 +7,7 @@ use App\Http\Requests\Doctor\Specialty\StoreDoctorSpecialtyRequest;
 use App\Models\DoctorSpecialty;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\Doctor\DoctorSpecialtyResource;
 
 class DoctorSpecialtyController extends BaseController
 {
@@ -19,7 +20,7 @@ class DoctorSpecialtyController extends BaseController
     {
         $specialties = DoctorSpecialty::where('doctor_id', $this->getDoctorId($request))->with('specialization')->latest()->get();
 
-        return $this->success($specialties);
+        return $this->success(DoctorSpecialtyResource::collection($specialties));
     }
 
     public function store(StoreDoctorSpecialtyRequest $request): JsonResponse

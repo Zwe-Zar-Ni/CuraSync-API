@@ -8,6 +8,7 @@ use App\Http\Requests\Doctor\ScheduleOverride\UpdateScheduleOverrideRequest;
 use App\Models\DoctorScheduleOverride;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ScheduleOverrideController extends BaseController
 {
@@ -52,7 +53,8 @@ class ScheduleOverrideController extends BaseController
 
     public function update(UpdateScheduleOverrideRequest $request, int $id): JsonResponse
     {
-        $override = DoctorScheduleOverride::where('doctor_id', $this->getDoctorId($request))->find($id);
+        $override = DoctorScheduleOverride::where('doctor_id', $this->getDoctorId($request))
+            ->whereDate('date', '>', Carbon::today())->find($id);
         if (! $override) {
             return $this->error('Schedule override not found.', 404);
         }
