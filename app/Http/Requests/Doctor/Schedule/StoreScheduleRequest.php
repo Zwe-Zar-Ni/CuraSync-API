@@ -18,7 +18,7 @@ class StoreScheduleRequest extends FormRequest
             'day_of_week' => ['required', Rule::in(['0', '1', '2', '3', '4', '5', '6'])],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
-            'slot_duration_minutes' => ['nullable', 'integer', 'min:5', 'max:240'],
+            'slot_duration_minutes' => ['nullable', 'integer', 'min:5', 'max:120'],
         ];
     }
 }

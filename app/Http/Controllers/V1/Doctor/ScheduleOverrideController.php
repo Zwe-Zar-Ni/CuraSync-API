@@ -19,7 +19,8 @@ class ScheduleOverrideController extends BaseController
 
     public function index(Request $request): JsonResponse
     {
-        $overrides = DoctorScheduleOverride::where('doctor_id', $this->getDoctorId($request))->latest()->get();
+        $lastWeek = Carbon::today()->subWeek();
+        $overrides = DoctorScheduleOverride::where('doctor_id', $this->getDoctorId($request))->whereDate('date', '>', $lastWeek)->latest()->get();
 
         return $this->success($overrides);
     }
@@ -53,8 +54,9 @@ class ScheduleOverrideController extends BaseController
 
     public function update(UpdateScheduleOverrideRequest $request, int $id): JsonResponse
     {
+        $nextThreeDays = Carbon::today()->addDays(3);
         $override = DoctorScheduleOverride::where('doctor_id', $this->getDoctorId($request))
-            ->whereDate('date', '>', Carbon::today())->find($id);
+            ->whereDate('date', '>=', $nextThreeDays)->find($id);
         if (! $override) {
             return $this->error('Schedule override not found.', 404);
         }

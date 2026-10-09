@@ -56,6 +56,7 @@ class ScheduleController extends BaseController
             return $this->error('Schedule not found.', 404);
         }
         $schedule->update($request->validated());
+        $schedule->update(['is_active' => false]);
 
         return $this->success($schedule, 'Schedule updated successfully.');
     }
