@@ -8,6 +8,7 @@ use App\Http\Requests\Doctor\Qualification\UpdateQualificationRequest;
 use App\Models\DoctorQualification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\Doctor\QualificationResource;
 
 class QualificationController extends BaseController
 {
@@ -20,7 +21,7 @@ class QualificationController extends BaseController
     {
         $qualifications = DoctorQualification::where('doctor_id', $this->getDoctorId($request))->latest()->get();
 
-        return $this->success($qualifications);
+        return $this->success(QualificationResource::collection($qualifications));
     }
 
     public function store(StoreQualificationRequest $request): JsonResponse
@@ -35,7 +36,7 @@ class QualificationController extends BaseController
             'certificate_url' => $req['certificate_url'] ?? null,
         ]);
 
-        return $this->success($qualification, 'Qualification created successfully.', 201);
+        return $this->success(new QualificationResource($qualification), 'Qualification created successfully.', 201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -45,7 +46,7 @@ class QualificationController extends BaseController
             return $this->error('Qualification not found.', 404);
         }
 
-        return $this->success($qualification);
+        return $this->success(new QualificationResource($qualification));
     }
 
     public function update(UpdateQualificationRequest $request, int $id): JsonResponse
@@ -56,7 +57,7 @@ class QualificationController extends BaseController
         }
         $qualification->update($request->validated());
 
-        return $this->success($qualification, 'Qualification updated successfully.');
+        return $this->success(new QualificationResource($qualification), 'Qualification updated successfully.');
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -67,6 +68,6 @@ class QualificationController extends BaseController
         }
         $qualification->delete();
 
-        return $this->success([], 'Qualification deleted successfully.');
+        return $this->success([], 'Qualification deleted successfully.', 204);
     }
 }

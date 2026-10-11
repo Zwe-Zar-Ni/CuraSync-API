@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Doctor;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\ScheduleOverride\StoreScheduleOverrideRequest;
 use App\Http\Requests\Doctor\ScheduleOverride\UpdateScheduleOverrideRequest;
+use App\Http\Resources\Doctor\ScheduleOverrideResource;
 use App\Models\DoctorScheduleOverride;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class ScheduleOverrideController extends BaseController
         $lastWeek = Carbon::today()->subWeek();
         $overrides = DoctorScheduleOverride::where('doctor_id', $this->getDoctorId($request))->whereDate('date', '>', $lastWeek)->latest()->get();
 
-        return $this->success($overrides);
+        return $this->success(ScheduleOverrideResource::collection($overrides));
     }
 
     public function store(StoreScheduleOverrideRequest $request): JsonResponse
@@ -39,7 +40,7 @@ class ScheduleOverrideController extends BaseController
             'reason' => $req['reason'] ?? null,
         ]);
 
-        return $this->success($override, 'Schedule override created successfully.', 201);
+        return $this->success(new ScheduleOverrideResource($override), 'Schedule override created successfully.', 201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -49,7 +50,7 @@ class ScheduleOverrideController extends BaseController
             return $this->error('Schedule override not found.', 404);
         }
 
-        return $this->success($override);
+        return $this->success(new ScheduleOverrideResource($override));
     }
 
     public function update(UpdateScheduleOverrideRequest $request, int $id): JsonResponse
@@ -62,7 +63,7 @@ class ScheduleOverrideController extends BaseController
         }
         $override->update($request->validated());
 
-        return $this->success($override, 'Schedule override updated successfully.');
+        return $this->success(new ScheduleOverrideResource($override), 'Schedule override updated successfully.');
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -73,6 +74,6 @@ class ScheduleOverrideController extends BaseController
         }
         $override->delete();
 
-        return $this->success([], 'Schedule override deleted successfully.');
+        return $this->success([], 'Schedule override deleted successfully.', 204);
     }
 }

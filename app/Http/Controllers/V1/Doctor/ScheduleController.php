@@ -8,6 +8,7 @@ use App\Http\Requests\Doctor\Schedule\UpdateScheduleRequest;
 use App\Models\DoctorSchedule;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\Doctor\ScheduleResource as DoctorScheduleResource;
 
 class ScheduleController extends BaseController
 {
@@ -20,7 +21,7 @@ class ScheduleController extends BaseController
     {
         $schedules = DoctorSchedule::where('doctor_id', $this->getDoctorId($request))->latest()->get();
 
-        return $this->success($schedules);
+        return $this->success(DoctorScheduleResource::collection($schedules));
     }
 
     public function store(StoreScheduleRequest $request): JsonResponse
@@ -36,7 +37,7 @@ class ScheduleController extends BaseController
             'is_active' => false,
         ]);
 
-        return $this->success($schedule, 'Schedule created successfully.', 201);
+        return $this->success(new DoctorScheduleResource($schedule), 'Schedule created successfully.', 201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -46,7 +47,7 @@ class ScheduleController extends BaseController
             return $this->error('Schedule not found.', 404);
         }
 
-        return $this->success($schedule);
+        return $this->success(new DoctorScheduleResource($schedule));
     }
 
     public function update(UpdateScheduleRequest $request, int $id): JsonResponse
@@ -58,7 +59,7 @@ class ScheduleController extends BaseController
         $schedule->update($request->validated());
         $schedule->update(['is_active' => false]);
 
-        return $this->success($schedule, 'Schedule updated successfully.');
+        return $this->success(new DoctorScheduleResource($schedule), 'Schedule updated successfully.');
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -69,6 +70,6 @@ class ScheduleController extends BaseController
         }
         $schedule->delete();
 
-        return $this->success([], 'Schedule deleted successfully.');
+        return $this->success([], 'Schedule deleted successfully.', 204);
     }
 }
