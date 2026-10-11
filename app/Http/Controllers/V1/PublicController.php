@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Resources\DoctorResource;
+use App\Http\Resources\Public\DoctorResource;
 use App\Models\Doctor;
 use App\Models\Specialization;
 use Illuminate\Http\Request;
