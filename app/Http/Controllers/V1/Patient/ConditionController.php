@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Patient;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Patient\Condition\StoreConditionRequest;
 use App\Http\Requests\Patient\Condition\UpdateConditionRequest;
+use App\Http\Resources\Patient\ConditionResource;
 use App\Models\PatientCondition;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class ConditionController extends BaseController
     {
         $conditions = PatientCondition::where('patient_id', $this->getPatientId($request))->latest()->get();
 
-        return $this->success($conditions);
+        return $this->success(ConditionResource::collection($conditions));
     }
 
     public function store(StoreConditionRequest $request): JsonResponse
@@ -35,7 +36,7 @@ class ConditionController extends BaseController
             'note' => $req['note'] ?? null,
         ]);
 
-        return $this->success($condition, 'Condition created successfully.', 201);
+        return $this->success(new ConditionResource($condition), 'Condition created successfully.', 201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -45,7 +46,7 @@ class ConditionController extends BaseController
             return $this->error('Condition not found.', 404);
         }
 
-        return $this->success($condition);
+        return $this->success(new ConditionResource($condition));
     }
 
     public function update(UpdateConditionRequest $request, int $id): JsonResponse
@@ -56,7 +57,7 @@ class ConditionController extends BaseController
         }
         $condition->update($request->validated());
 
-        return $this->success($condition, 'Condition updated successfully.');
+        return $this->success(new ConditionResource($condition), 'Condition updated successfully.');
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -67,6 +68,6 @@ class ConditionController extends BaseController
         }
         $condition->delete();
 
-        return $this->success([], 'Condition deleted successfully.');
+        return $this->success([], 'Condition deleted successfully.', 204);
     }
 }

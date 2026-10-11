@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Patient;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Patient\Allergy\StoreAllergyRequest;
 use App\Http\Requests\Patient\Allergy\UpdateAllergyRequest;
+use App\Http\Resources\Patient\AllergyResource;
 use App\Models\PatientAllergy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class AllergyController extends BaseController
     {
         $allergies = PatientAllergy::where('patient_id', $this->getPatientId($request))->latest()->get();
 
-        return $this->success($allergies);
+        return $this->success(AllergyResource::collection($allergies));
     }
 
     public function store(StoreAllergyRequest $request): JsonResponse
@@ -34,7 +35,7 @@ class AllergyController extends BaseController
             'note' => $req['note'] ?? null,
         ]);
 
-        return $this->success($allergy, 'Allergy created successfully.', 201);
+        return $this->success(new AllergyResource($allergy), 'Allergy created successfully.', 201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -44,7 +45,7 @@ class AllergyController extends BaseController
             return $this->error('Allergy not found.', 404);
         }
 
-        return $this->success($allergy);
+        return $this->success(new AllergyResource($allergy));
     }
 
     public function update(UpdateAllergyRequest $request, int $id): JsonResponse
@@ -55,7 +56,7 @@ class AllergyController extends BaseController
         }
         $allergy->update($request->validated());
 
-        return $this->success($allergy, 'Allergy updated successfully.');
+        return $this->success(new AllergyResource($allergy), 'Allergy updated successfully.');
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -66,6 +67,6 @@ class AllergyController extends BaseController
         }
         $allergy->delete();
 
-        return $this->success([], 'Allergy deleted successfully.');
+        return $this->success([], 'Allergy deleted successfully.', 204);
     }
 }

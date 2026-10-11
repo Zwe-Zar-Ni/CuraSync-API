@@ -17,7 +17,6 @@ There is no frontend: no `package.json`/Vite/`node_modules`. The `npm install`/`
 ## Conventions
 
 - JSON envelope from `BaseController` (`app/Http/Controllers/BaseController.php`): all responses are `{data, errors, message, status}` via `success()`/`error()`. Paginate with `->paginate()` and include `extractPaginationMeta()`. New controllers extend `BaseController`, not the abstract `Controller`.
-- Throw `CustomApiException` (`app/Exceptions/CustomApiException.php`) for API errors; `bootstrap/app.php` renders JSON for `api/*` requests and appends `ForceJsonRequestHeader` (forces `Accept: application/json`) globally.
 - Auth endpoints live in `routes/api.php` under a `v1` prefix group (`App\Http\Controllers\V1\*`). `registerPatient`/`registerDoctor` create the User + assign role + create the profile inside a `DB::transaction`; `registerDoctor` defaults `Doctor.status` to `PENDING_VERIFICATION`.
 - Domain CRUD controllers extend `BaseController` and live under `App\Http\Controllers\V1\Patient\*` and `App\Http\Controllers\V1\Doctor\*`; each has a private `getPatientId()`/`getDoctorId()` helper returning `$request->user()->patient?->id ?? 0` (doctor variant same), scopes every query to the authenticated user's profile, and uses the `create([...])`-with-explicit-keys form.
 - CRUD resources under the `patients` group (`role:patient`): `allergies` (AllergyController), `conditions` (ConditionController), `contacts` (ContactController). Under the `doctors` group (`role:doctor`): `qualifications` (QualificationController), `schedules` (ScheduleController), `schedule-overrides` (ScheduleOverrideController); `specialties` is create+delete only (DoctorSpecialtyController, pivot `doctor_specialty`).
@@ -28,9 +27,3 @@ There is no frontend: no `package.json`/Vite/`node_modules`. The `npm install`/`
 - Doctor↔specialization pivot table is `doctor_specialty` — note the singular name, not the alphabetical `doctor_specialization`.
 - RBAC via `spatie/laravel-permission` (`HasRoles` on `User`): roles Patient, Doctor, Admin; teams disabled (`config/permission.php`).
 - New FKs follow the existing pattern: `$table->foreignId('x_id')->constrained()->cascadeOnDelete()`.
-
-## Gotchas
-
-- `.env` targets MySQL (`DB_DATABASE=curasync`) and is gitignored — never commit secrets. For local verification, prefer in-memory SQLite (`php artisan test`); for MySQL work you must create the `curasync` database first. A stray gitignored `database/database.sqlite` exists from the skeleton.
-- `git log` has three commits (schema → models → auth); the auth changes in `app/Exceptions/CustomApiException.php`, `app/Http/Controllers/V1/AuthController.php`, and `routes/api.php` are uncommitted work, as are the patient/doctor domain CRUD controllers, form requests, seeders, and their `routes/api.php` additions.
-- GitHub CI and pre-commit hooks are absent; `builder`, `boost`, and other skeleton packages are not installed (`CLAUDE.md` still contains the stale boost-install instructions — ignore it).

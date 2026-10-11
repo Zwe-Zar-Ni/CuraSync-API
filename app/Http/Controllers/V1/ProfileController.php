@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Exceptions\CustomApiException;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\UpdateDoctorProfileRequest;
 use App\Http\Requests\Patient\UpdatePatientProfileRequest;
@@ -23,7 +22,7 @@ class ProfileController extends BaseController
         $user = $request->user();
         $this->updateUserProfile($user, $request->validated());
         if (! $user->patient) {
-            throw new CustomApiException([], 404, 'Patient profile not found.');
+            return $this->error('Patient profile not found.', 404);
         }
         $user->patient->update(
             $request->only(['date_of_birth', 'gender', 'blood_type'])
@@ -37,7 +36,7 @@ class ProfileController extends BaseController
         $user = $request->user();
         $this->updateUserProfile($user, $request->validated());
         if (! $user->doctor) {
-            throw new CustomApiException([], 404, 'Doctor profile not found.');
+            return $this->error('Doctor profile not found.', 404);
         }
         $user->doctor->update(
             $request->only(['license_number', 'standard_consultation_fee', 'bio'])

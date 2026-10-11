@@ -8,6 +8,7 @@ use App\Http\Requests\Patient\Contact\UpdateContactRequest;
 use App\Models\PatientContact;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Resources\Patient\ContactResource;
 
 class ContactController extends BaseController
 {
@@ -20,7 +21,7 @@ class ContactController extends BaseController
     {
         $contacts = PatientContact::where('patient_id', $this->getPatientId($request))->latest()->get();
 
-        return $this->success($contacts);
+        return $this->success(ContactResource::collection($contacts));
     }
 
     public function store(StoreContactRequest $request): JsonResponse
@@ -35,7 +36,7 @@ class ContactController extends BaseController
             'address' => $req['address'] ?? null,
         ]);
 
-        return $this->success($contact, 'Contact created successfully.', 201);
+        return $this->success(new ContactResource($contact), 'Contact created successfully.', 201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -45,7 +46,7 @@ class ContactController extends BaseController
             return $this->error('Contact not found.', 404);
         }
 
-        return $this->success($contact);
+        return $this->success(new ContactResource($contact));
     }
 
     public function update(UpdateContactRequest $request, int $id): JsonResponse
@@ -56,7 +57,7 @@ class ContactController extends BaseController
         }
         $contact->update($request->validated());
 
-        return $this->success($contact, 'Contact updated successfully.');
+        return $this->success(new ContactResource($contact), 'Contact updated successfully.');
     }
 
     public function destroy(Request $request, int $id): JsonResponse
@@ -67,6 +68,6 @@ class ContactController extends BaseController
         }
         $contact->delete();
 
-        return $this->success([], 'Contact deleted successfully.');
+        return $this->success([], 'Contact deleted successfully.', 204);
     }
 }
