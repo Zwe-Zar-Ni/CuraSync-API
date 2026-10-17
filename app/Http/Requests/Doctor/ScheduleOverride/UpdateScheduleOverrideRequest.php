@@ -16,12 +16,13 @@ class UpdateScheduleOverrideRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date' => ['required', 'date'],
+            'date' => ['required', 'date', 'after:+5 days'],
             'type' => ['required', Rule::enum(ScheduleOverrideType::class)],
             'start_time' => ['nullable', 'date_format:H:i', 'required_if:type,CUSTOM_HOURS'],
             'end_time' => ['nullable', 'date_format:H:i', 'required_if:type,CUSTOM_HOURS', 'after:start_time'],
             'slot_duration_minutes' => ['nullable', 'integer', 'min:5', 'max:240'],
             'reason' => ['nullable', 'string', 'max:1000'],
+            'doctor_note' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

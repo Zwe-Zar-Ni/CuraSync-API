@@ -5,10 +5,13 @@ namespace App\Http\Controllers\V1\Doctor;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\Schedule\StoreScheduleRequest;
 use App\Http\Requests\Doctor\Schedule\UpdateScheduleRequest;
+use App\Http\Resources\Doctor\ScheduleResource as DoctorScheduleResource;
 use App\Models\DoctorSchedule;
+use App\Models\DoctorScheduleRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Resources\Doctor\ScheduleResource as DoctorScheduleResource;
+use App\Enums\ScheduleRequestType;
+use App\Enums\ScheduleRequestStatus;
 
 class ScheduleController extends BaseController
 {
@@ -28,16 +31,23 @@ class ScheduleController extends BaseController
     {
         $req = $request->validated();
         $doctorId = $this->getDoctorId($request);
-        $schedule = DoctorSchedule::create([
+
+        $schedule_request = new DoctorScheduleRequest();
+        $schedule_request->doctor_id = $doctorId;
+        $schedule_request->request_type = ScheduleRequestType::CREATE;
+        $schedule_request->status = ScheduleRequestStatus::PENDING;
+        $schedule_request->doctor_note = $req['doctor_note'] ?? null;
+        $schedule_request->data = [
             'doctor_id' => $doctorId,
             'day_of_week' => $req['day_of_week'],
             'start_time' => $req['start_time'],
             'end_time' => $req['end_time'],
             'slot_duration_minutes' => $req['slot_duration_minutes'] ?? 15,
             'is_active' => false,
-        ]);
+        ];
+        $schedule_request->save();
 
-        return $this->success(new DoctorScheduleResource($schedule), 'Schedule created successfully.', 201);
+        return $this->success([], 'Schedule has been created for approval.', 201);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -52,24 +62,39 @@ class ScheduleController extends BaseController
 
     public function update(UpdateScheduleRequest $request, int $id): JsonResponse
     {
-        $schedule = DoctorSchedule::where('doctor_id', $this->getDoctorId($request))->find($id);
+        $doctorId = $this->getDoctorId($request);
+        $schedule = DoctorSchedule::where('doctor_id', $doctorId)->find($id);
         if (! $schedule) {
             return $this->error('Schedule not found.', 404);
         }
-        $schedule->update($request->validated());
-        $schedule->update(['is_active' => false]);
 
-        return $this->success(new DoctorScheduleResource($schedule), 'Schedule updated successfully.');
+        $schedule_request = new DoctorScheduleRequest();
+        $schedule_request->doctor_id = $doctorId;
+        $schedule_request->schedule_id = $schedule->id;
+        $schedule_request->request_type = ScheduleRequestType::UPDATE;
+        $schedule_request->status = ScheduleRequestStatus::PENDING;
+        $schedule_request->doctor_note = $request['doctor_note'] ?? null;
+        $schedule_request->data = $request->validated();
+        $schedule_request->save();
+
+        return $this->success([], 'Schedule update has been requested for approval.', 200);
     }
 
     public function destroy(Request $request, int $id): JsonResponse
     {
-        $schedule = DoctorSchedule::where('doctor_id', $this->getDoctorId($request))->find($id);
+        $doctorId = $this->getDoctorId($request);
+        $schedule = DoctorSchedule::where('doctor_id', $doctorId)->find($id);
         if (! $schedule) {
             return $this->error('Schedule not found.', 404);
         }
-        $schedule->delete();
+        $schedule_request = new DoctorScheduleRequest();
+        $schedule_request->doctor_id = $doctorId;
+        $schedule_request->schedule_id = $schedule->id;
+        $schedule_request->request_type = ScheduleRequestType::DELETE;
+        $schedule_request->status = ScheduleRequestStatus::PENDING;
+        $schedule_request->doctor_note = $request->input('doctor_note');
+        $schedule_request->save();
 
-        return $this->success([], 'Schedule deleted successfully.', 204);
+        return $this->success([], 'Schedule delete has been requested for approval.', 200);
     }
 }

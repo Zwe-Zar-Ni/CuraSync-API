@@ -19,6 +19,7 @@ class StoreScheduleRequest extends FormRequest
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'slot_duration_minutes' => ['nullable', 'integer', 'min:5', 'max:120'],
+            'doctor_note' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
