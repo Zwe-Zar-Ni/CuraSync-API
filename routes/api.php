@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\V1\Admin\DoctorController as AdminDoctorController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\Doctor\DoctorSpecialtyController;
 use App\Http\Controllers\V1\Doctor\QualificationController;
@@ -21,6 +22,10 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [ProfileController::class, 'show']);
+
+        Route::prefix('admin')->middleware(['role:admin'])->group(function () {
+            Route::get('/doctors', [AdminDoctorController::class, 'index']);
+        });
 
         Route::prefix('patients')->middleware(['role:patient'])->group(function () {
             Route::patch('/profile', [ProfileController::class, 'updatePatientProfile']);

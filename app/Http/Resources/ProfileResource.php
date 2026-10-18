@@ -38,6 +38,13 @@ class ProfileResource extends JsonResource
             ];
         });
 
+        $profile = null;
+        if ($role === 'doctor') {
+            $profile = $doctor;
+        } else if ($role === 'patient') {
+            $profile = $patient;
+        }
+
         return [
             'user' => [
                 'id' => $this->id,
@@ -47,7 +54,7 @@ class ProfileResource extends JsonResource
                 'profile_url' => $this->profile_url,
             ],
             'role' => $role,
-            'profile' => $role === 'doctor' ? $doctor : $patient,
+            'profile' => $profile,
         ];
     }
 }

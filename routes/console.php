@@ -4,7 +4,6 @@ use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -13,7 +12,7 @@ Artisan::command('inspire', function () {
 Artisan::command('create:admin', function () {
     $user = User::firstOrCreate([
         'name' => 'Admin',
-        'email' => 'admin@example.com',
+        'email' => 'admin@gmail.com',
         'password' => Hash::make('password'),
     ]);
     $this->info("Created admin user: {$user->name}");

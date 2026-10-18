@@ -11,7 +11,7 @@ class BaseController extends Controller
             'errors' => $errors,
             'message' => $message,
             'status' => $status,
-        ]);
+        ], $status);
     }
 
     public function success($data, $message = '', $status = 200)
@@ -28,12 +28,12 @@ class BaseController extends Controller
     {
         return [
             'currentPage' => $data->currentPage(),
-            'perPage' => $data->perPage(),
-            'total' => $data->total(),
-            'lastPage' => $data->lastPage(),
             'hasMorePages' => $data->hasMorePages(),
+            'lastPage' => $data->lastPage(),
             'nextPageUrl' => $data->nextPageUrl(),
+            'perPage' => $data->perPage(),
             'previousPageUrl' => $data->previousPageUrl(),
+            'total' => $data->total(),
         ];
     }
 }
