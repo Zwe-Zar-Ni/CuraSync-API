@@ -27,6 +27,13 @@ class DoctorController extends BaseController
         if ($request->filled('phone_number')) {
             $query->where('phone_number', $request->phone_number);
         }
+        if ($request->filled('specialization_id')) {
+            $query->whereHas('doctor', function ($query) use ($request) {
+                return $query->whereHas('specializations', function ($query) use ($request) {
+                    $query->where('specialization_id', $request->specialization_id);
+                });
+            });
+        }
         $doctors = $query->paginate($request->query('per_page', 10));
         return $this->success([
             'data' => ProfileResource::collection($doctors),
