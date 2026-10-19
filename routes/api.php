@@ -25,6 +25,7 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('admin')->middleware(['role:admin'])->group(function () {
             Route::get('/doctors', [AdminDoctorController::class, 'index']);
+            Route::get('/doctors/{id}', [AdminDoctorController::class, 'show']);
         });
 
         Route::prefix('patients')->middleware(['role:patient'])->group(function () {

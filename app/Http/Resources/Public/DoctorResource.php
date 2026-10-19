@@ -19,7 +19,7 @@ class DoctorResource extends JsonResource
                 return [
                     'name' => $qualification->name,
                     'institution' => $qualification->institution,
-                    'year' => $qualification->year,
+                    'year' => (int) $qualification->year,
                 ];
             });
         });
@@ -38,10 +38,10 @@ class DoctorResource extends JsonResource
             return $this->schedules->map(function ($schedule) {
                 return [
                     'id' => $schedule->id,
-                    'day_of_week' => $schedule->date,
+                    'day_of_week' => (int) $schedule->day_of_week,
                     'start_time' => $schedule->start_time,
                     'end_time' => $schedule->end_time,
-                    'slot_duration_minutes' => $schedule->slot_duration_minutes,
+                    'slot_duration_minutes' => (int) $schedule->slot_duration_minutes,
                 ];
             });
         });
@@ -54,18 +54,19 @@ class DoctorResource extends JsonResource
                     'type' => $schedule->type,
                     'start_time' => $schedule->start_time,
                     'end_time' => $schedule->end_time,
-                    'slot_duration_minutes' => $schedule->slot_duration_minutes,
+                    'slot_duration_minutes' => (int) $schedule->slot_duration_minutes,
                 ];
             });
         });
 
         return [
             'id' => $this->id,
+            'status' => $this->status,
             'license_number' => $this->license_number,
             'standard_consultation_fee' => (float) $this->standard_consultation_fee,
             'bio' => $this->bio,
-            'total_patient_count' => $this->total_patient_count,
-            'rating_count' => $this->rating_count,
+            'total_patient_count' => (int) $this->total_patient_count,
+            'rating_count' => (int) $this->rating_count,
             'average_rating' => (float) $this->average_rating,
             'specilizations' => $specializations,
             'qualifications' => $qualifications,
