@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\Admin\DoctorController as AdminDoctorController;
+use App\Http\Controllers\V1\Admin\ScheduleRequestController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\Doctor\DoctorSpecialtyController;
 use App\Http\Controllers\V1\Doctor\QualificationController;
@@ -26,6 +27,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('admin')->middleware(['role:admin'])->group(function () {
             Route::get('/doctors', [AdminDoctorController::class, 'index']);
             Route::get('/doctors/{id}', [AdminDoctorController::class, 'show']);
+            Route::get('/schedule-requests', [ScheduleRequestController::class, 'index']);
         });
 
         Route::prefix('patients')->middleware(['role:patient'])->group(function () {

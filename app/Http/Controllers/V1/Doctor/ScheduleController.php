@@ -38,12 +38,10 @@ class ScheduleController extends BaseController
         $schedule_request->status = ScheduleRequestStatus::PENDING;
         $schedule_request->doctor_note = $req['doctor_note'] ?? null;
         $schedule_request->data = [
-            'doctor_id' => $doctorId,
             'day_of_week' => $req['day_of_week'],
             'start_time' => $req['start_time'],
             'end_time' => $req['end_time'],
             'slot_duration_minutes' => $req['slot_duration_minutes'] ?? 15,
-            'is_active' => false,
         ];
         $schedule_request->save();
 

@@ -8,6 +8,10 @@ class DoctorScheduleRequest extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'data' => 'array',
+    ];
+
     public function doctor()
     {
         return $this->belongsTo(Doctor::class);
