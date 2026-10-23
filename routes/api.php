@@ -28,6 +28,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/doctors', [AdminDoctorController::class, 'index']);
             Route::get('/doctors/{id}', [AdminDoctorController::class, 'show']);
             Route::get('/schedule-requests', [ScheduleRequestController::class, 'index']);
+            Route::put('/schedule-requests/{id}', [ScheduleRequestController::class, 'update']);
         });
 
         Route::prefix('patients')->middleware(['role:patient'])->group(function () {

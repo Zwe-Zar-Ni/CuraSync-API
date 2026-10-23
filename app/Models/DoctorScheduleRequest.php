@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ScheduleRequestStatus;
+use App\Enums\ScheduleRequestType;
 use Illuminate\Database\Eloquent\Model;
 
 class DoctorScheduleRequest extends Model
@@ -10,6 +12,8 @@ class DoctorScheduleRequest extends Model
 
     protected $casts = [
         'data' => 'array',
+        'status' => ScheduleRequestStatus::class,
+        'request_type' => ScheduleRequestType::class,
     ];
 
     public function doctor()
