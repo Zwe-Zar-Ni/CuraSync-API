@@ -1,8 +1,13 @@
 <?php
 
-use App\Http\Controllers\V1\Admin\DoctorController as AdminDoctorController;
-use App\Http\Controllers\V1\Admin\ScheduleRequestController;
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\ProfileController;
+use App\Http\Controllers\V1\PublicController;
+use App\Http\Controllers\V1\Admin\DoctorController as AdminDoctorController;
+use App\Http\Controllers\V1\Admin\ScheduleRequestController as AdminScheduleRequestController;
+use App\Http\Controllers\V1\Admin\ScheduleController as AdminScheduleController;
 use App\Http\Controllers\V1\Doctor\DoctorSpecialtyController;
 use App\Http\Controllers\V1\Doctor\QualificationController;
 use App\Http\Controllers\V1\Doctor\ScheduleController;
@@ -10,9 +15,6 @@ use App\Http\Controllers\V1\Doctor\ScheduleOverrideController;
 use App\Http\Controllers\V1\Patient\AllergyController;
 use App\Http\Controllers\V1\Patient\ConditionController;
 use App\Http\Controllers\V1\Patient\ContactController;
-use App\Http\Controllers\V1\ProfileController;
-use App\Http\Controllers\V1\PublicController;
-use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
@@ -27,8 +29,11 @@ Route::prefix('v1')->group(function () {
         Route::prefix('admin')->middleware(['role:admin'])->group(function () {
             Route::get('/doctors', [AdminDoctorController::class, 'index']);
             Route::get('/doctors/{id}', [AdminDoctorController::class, 'show']);
-            Route::get('/schedule-requests', [ScheduleRequestController::class, 'index']);
-            Route::put('/schedule-requests/{id}', [ScheduleRequestController::class, 'update']);
+
+            Route::get('/schedule-requests', [AdminScheduleRequestController::class, 'index']);
+            Route::put('/schedule-requests/{id}', [AdminScheduleRequestController::class, 'update']);
+
+            Route::get('/schedules', [AdminScheduleController::class, 'index']);
         });
 
         Route::prefix('patients')->middleware(['role:patient'])->group(function () {

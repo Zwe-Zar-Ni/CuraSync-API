@@ -13,7 +13,7 @@ class DoctorSchedule extends Model
     protected function isActive(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => $value === 1,
+            get: fn(string $value) => $value == 1,
         );
     }
 
