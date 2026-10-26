@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ProfileController;
-use App\Http\Controllers\V1\PublicController;
 use App\Http\Controllers\V1\Admin\DoctorController as AdminDoctorController;
 use App\Http\Controllers\V1\Admin\ScheduleRequestController as AdminScheduleRequestController;
 use App\Http\Controllers\V1\Admin\ScheduleController as AdminScheduleController;
@@ -15,6 +14,7 @@ use App\Http\Controllers\V1\Doctor\ScheduleOverrideController;
 use App\Http\Controllers\V1\Patient\AllergyController;
 use App\Http\Controllers\V1\Patient\ConditionController;
 use App\Http\Controllers\V1\Patient\ContactController;
+use App\Http\Controllers\V1\Public\DoctorController as PublicDoctorController;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
@@ -55,11 +55,9 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::prefix('public')->group(function () {
-        Route::get('/specializations', [PublicController::class, 'getSpecializations']);
-        Route::get('/doctors', [PublicController::class, 'getDoctors']);
-        Route::get('/doctors/{id}', [PublicController::class, 'getDoctorDetails']);
+        Route::get('/specializations', [PublicDoctorController::class, 'getSpecializations']);
+        Route::get('/specializations/{id}', [PublicDoctorController::class, 'getSpecializationDetails']);
+        Route::get('/doctors/{id}', [PublicDoctorController::class, 'getDoctorDetails']);
+        Route::get('/search', [PublicDoctorController::class, 'search']);
     });
 });
-
-// * Test token for Doctor : 
-// * Test token for patient : 
