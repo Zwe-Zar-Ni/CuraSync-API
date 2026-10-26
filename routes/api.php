@@ -33,7 +33,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/schedule-requests', [AdminScheduleRequestController::class, 'index']);
             Route::put('/schedule-requests/{id}', [AdminScheduleRequestController::class, 'update']);
 
-            Route::get('/schedules', [AdminScheduleController::class, 'index']);
+            Route::get('/doctor-schedules', [AdminScheduleController::class, 'index']);
         });
 
         Route::prefix('patients')->middleware(['role:patient'])->group(function () {
