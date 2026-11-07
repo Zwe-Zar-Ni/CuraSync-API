@@ -8,11 +8,11 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\ScheduleOverride\StoreScheduleOverrideRequest;
 use App\Http\Requests\Doctor\ScheduleOverride\UpdateScheduleOverrideRequest;
 use App\Http\Resources\Doctor\ScheduleOverrideResource;
-use App\Models\DoctorScheduleOverrideRequest;
 use App\Models\DoctorScheduleOverride;
+use App\Models\DoctorScheduleOverrideRequest;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class ScheduleOverrideController extends BaseController
 {
@@ -34,7 +34,7 @@ class ScheduleOverrideController extends BaseController
         $req = $request->validated();
         $doctorId = $this->getDoctorId($request);
 
-        $overrideRequest = new DoctorScheduleOverrideRequest();
+        $overrideRequest = new DoctorScheduleOverrideRequest;
         $overrideRequest->doctor_id = $doctorId;
         $overrideRequest->request_type = ScheduleRequestType::CREATE;
         $overrideRequest->status = ScheduleRequestStatus::PENDING;
@@ -75,7 +75,7 @@ class ScheduleOverrideController extends BaseController
             return $this->error('Schedule override cannot be updated.', 400);
         }
 
-        $overrideRequest = new DoctorScheduleOverrideRequest();
+        $overrideRequest = new DoctorScheduleOverrideRequest;
         $overrideRequest->doctor_id = $doctorId;
         $overrideRequest->schedule_id = $override->id;
         $overrideRequest->request_type = ScheduleRequestType::UPDATE;
@@ -99,7 +99,7 @@ class ScheduleOverrideController extends BaseController
             return $this->error('Schedule override cannot be deleted.', 400);
         }
 
-        $overrideRequest = new DoctorScheduleOverrideRequest();
+        $overrideRequest = new DoctorScheduleOverrideRequest;
         $overrideRequest->doctor_id = $doctorId;
         $overrideRequest->schedule_id = $override->id;
         $overrideRequest->request_type = ScheduleRequestType::DELETE;

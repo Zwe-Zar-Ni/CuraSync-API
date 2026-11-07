@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\V1\Doctor;
 
+use App\Enums\ScheduleRequestStatus;
+use App\Enums\ScheduleRequestType;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\Schedule\StoreScheduleRequest;
 use App\Http\Requests\Doctor\Schedule\UpdateScheduleRequest;
@@ -10,8 +12,6 @@ use App\Models\DoctorSchedule;
 use App\Models\DoctorScheduleRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Enums\ScheduleRequestType;
-use App\Enums\ScheduleRequestStatus;
 
 class ScheduleController extends BaseController
 {
@@ -32,7 +32,7 @@ class ScheduleController extends BaseController
         $req = $request->validated();
         $doctorId = $this->getDoctorId($request);
 
-        $schedule_request = new DoctorScheduleRequest();
+        $schedule_request = new DoctorScheduleRequest;
         $schedule_request->doctor_id = $doctorId;
         $schedule_request->request_type = ScheduleRequestType::CREATE;
         $schedule_request->status = ScheduleRequestStatus::PENDING;
@@ -66,7 +66,7 @@ class ScheduleController extends BaseController
             return $this->error('Schedule not found.', 404);
         }
 
-        $schedule_request = new DoctorScheduleRequest();
+        $schedule_request = new DoctorScheduleRequest;
         $schedule_request->doctor_id = $doctorId;
         $schedule_request->schedule_id = $schedule->id;
         $schedule_request->request_type = ScheduleRequestType::UPDATE;
@@ -85,7 +85,7 @@ class ScheduleController extends BaseController
         if (! $schedule) {
             return $this->error('Schedule not found.', 404);
         }
-        $schedule_request = new DoctorScheduleRequest();
+        $schedule_request = new DoctorScheduleRequest;
         $schedule_request->doctor_id = $doctorId;
         $schedule_request->schedule_id = $schedule->id;
         $schedule_request->request_type = ScheduleRequestType::DELETE;

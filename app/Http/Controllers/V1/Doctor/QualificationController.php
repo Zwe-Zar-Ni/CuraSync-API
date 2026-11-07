@@ -5,10 +5,10 @@ namespace App\Http\Controllers\V1\Doctor;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\Qualification\StoreQualificationRequest;
 use App\Http\Requests\Doctor\Qualification\UpdateQualificationRequest;
+use App\Http\Resources\Doctor\QualificationResource;
 use App\Models\DoctorQualification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Resources\Doctor\QualificationResource;
 
 class QualificationController extends BaseController
 {

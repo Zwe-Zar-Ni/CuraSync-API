@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\V1\Admin;
 
 use App\Http\Controllers\BaseController;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use App\Models\Doctor;
 use App\Http\Resources\Public\DoctorResource;
+use App\Models\Doctor;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DoctorController extends BaseController
 {
@@ -16,7 +16,7 @@ class DoctorController extends BaseController
         $query = Doctor::with('user')->latest();
         if ($request->filled('search')) {
             $query->whereHas('user', function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%');
+                $query->where('name', 'like', '%'.$request->search.'%');
             });
         }
         if ($request->filled('status')) {
@@ -38,6 +38,7 @@ class DoctorController extends BaseController
             });
         }
         $doctors = $query->paginate($request->query('per_page', 10));
+
         return $this->success([
             'data' => DoctorResource::collection($doctors),
             'meta' => $this->extractPaginationMeta($doctors),
@@ -54,11 +55,12 @@ class DoctorController extends BaseController
             'schedules',
             'scheduleOverrides' => function ($query) use ($lastSevenDays) {
                 $query->whereDate('date', '>=', $lastSevenDays);
-            }
+            },
         ])->find($id);
         if (! $doctor) {
             return $this->error('Doctor not found.', 404);
         }
+
         return $this->success(DoctorResource::make($doctor));
     }
 }

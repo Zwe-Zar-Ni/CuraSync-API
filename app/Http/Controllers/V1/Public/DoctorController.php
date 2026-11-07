@@ -14,6 +14,7 @@ class DoctorController extends BaseController
     public function getSpecializations()
     {
         $specializations = Specialization::get();
+
         return $this->success(SpecializationResource::collection($specializations));
     }
 
@@ -22,12 +23,13 @@ class DoctorController extends BaseController
         $specialization = Specialization::with(['doctors' => function ($q) {
             return $q->whereActive()->with('user');
         }])->find($id);
+
         return $this->success(new SpecializationResource($specialization));
     }
 
     public function getDoctorDetails(int $id)
     {
-        $doctor = Doctor::whereActive()->with(['user', 'specializations',])->find($id);
+        $doctor = Doctor::whereActive()->with(['user', 'specializations'])->find($id);
         if (! $doctor) {
             return $this->error('Doctor not found', 404);
         }
@@ -37,19 +39,19 @@ class DoctorController extends BaseController
 
     public function search(Request $request)
     {
-        $q = $request->query('query', "");
+        $q = $request->query('query', '');
         if (empty($q)) {
             return $this->error('Please enter a query', 400);
         }
         if (strlen($q) < 3) {
             return $this->error('Query too short', 400);
         }
-        $specializations = Specialization::where('name', 'like', '%' . $q . '%')->orWhere('description', 'like', '%' . $q . '%')->get();
+        $specializations = Specialization::where('name', 'like', '%'.$q.'%')->orWhere('description', 'like', '%'.$q.'%')->get();
 
         $doctors = Doctor::whereActive()->whereHas('specializations', function ($query) use ($specializations) {
             $query->whereIn('specialization_id', $specializations->pluck('id'));
         })->orWhereHas('user', function ($query) use ($q) {
-            $query->where('name', 'like', '%' . $q . '%')->orWhere('bio', 'like', '%' . $q . '%');
+            $query->where('name', 'like', '%'.$q.'%')->orWhere('bio', 'like', '%'.$q.'%');
         })->with('user')->limit(10)->get();
 
         return $this->success([

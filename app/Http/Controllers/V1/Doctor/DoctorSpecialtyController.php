@@ -4,10 +4,10 @@ namespace App\Http\Controllers\V1\Doctor;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\Specialty\StoreDoctorSpecialtyRequest;
+use App\Http\Resources\Doctor\DoctorSpecialtyResource;
 use App\Models\DoctorSpecialty;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Resources\Doctor\DoctorSpecialtyResource;
 
 class DoctorSpecialtyController extends BaseController
 {
