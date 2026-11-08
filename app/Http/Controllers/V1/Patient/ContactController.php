@@ -5,10 +5,10 @@ namespace App\Http\Controllers\V1\Patient;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Patient\Contact\StoreContactRequest;
 use App\Http\Requests\Patient\Contact\UpdateContactRequest;
+use App\Http\Resources\Patient\ContactResource;
 use App\Models\PatientContact;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Resources\Patient\ContactResource;
 
 class ContactController extends BaseController
 {

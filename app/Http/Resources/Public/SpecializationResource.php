@@ -19,6 +19,7 @@ class SpecializationResource extends JsonResource
                 return DoctorResource::make($doctor);
             });
         });
+
         return [
             'id' => $this->id,
             'name' => $this->name,

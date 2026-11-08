@@ -14,7 +14,7 @@ class ProfileResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $role = $this->getRoleNames()->first();
+        $role = $request->attributes->get('jwt.role') ?? $this->getRoleNames()->first();
 
         $doctor = $this->whenLoaded('doctor', function () {
             return [
@@ -41,7 +41,7 @@ class ProfileResource extends JsonResource
         $profile = null;
         if ($role === 'doctor') {
             $profile = $doctor;
-        } else if ($role === 'patient') {
+        } elseif ($role === 'patient') {
             $profile = $patient;
         }
 

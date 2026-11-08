@@ -25,6 +25,7 @@ class ScheduleRequestResource extends JsonResource
         $doctorSchedule = $this->whenLoaded('doctorSchedule', function ($q) {
             return ScheduleResource::make($q);
         });
+
         return [
             'id' => $this->id,
             'doctor_id' => $this->doctor_id,

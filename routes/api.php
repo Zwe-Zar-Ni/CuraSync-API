@@ -1,12 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\V1\AuthController;
-use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\Admin\DoctorController as AdminDoctorController;
-use App\Http\Controllers\V1\Admin\ScheduleRequestController as AdminScheduleRequestController;
 use App\Http\Controllers\V1\Admin\ScheduleController as AdminScheduleController;
+use App\Http\Controllers\V1\Admin\ScheduleRequestController as AdminScheduleRequestController;
+use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\Doctor\DoctorSpecialtyController;
 use App\Http\Controllers\V1\Doctor\QualificationController;
 use App\Http\Controllers\V1\Doctor\ScheduleController;
@@ -14,19 +11,23 @@ use App\Http\Controllers\V1\Doctor\ScheduleOverrideController;
 use App\Http\Controllers\V1\Patient\AllergyController;
 use App\Http\Controllers\V1\Patient\ConditionController;
 use App\Http\Controllers\V1\Patient\ContactController;
+use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\Public\DoctorController as PublicDoctorController;
+use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
-        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1');
         Route::post('/register/patient', [AuthController::class, 'registerPatient']);
         Route::post('/register/doctor', [AuthController::class, 'registerDoctor']);
+        Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('throttle:10,1');
+        Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:api', 'throttle:10,1']);
     });
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:api')->group(function () {
         Route::get('/me', [ProfileController::class, 'show']);
 
-        Route::prefix('admin')->middleware(['role:admin'])->group(function () {
+        Route::prefix('admin')->middleware(['role.jwt:admin'])->group(function () {
             Route::get('/doctors', [AdminDoctorController::class, 'index']);
             Route::get('/doctors/{id}', [AdminDoctorController::class, 'show']);
 
@@ -36,7 +37,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/doctor-schedules', [AdminScheduleController::class, 'index']);
         });
 
-        Route::prefix('patients')->middleware(['role:patient'])->group(function () {
+        Route::prefix('patients')->middleware(['role.jwt:patient'])->group(function () {
             Route::patch('/profile', [ProfileController::class, 'updatePatientProfile']);
 
             Route::apiResource('allergies', AllergyController::class);
@@ -44,7 +45,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('contacts', ContactController::class);
         });
 
-        Route::prefix('doctors')->middleware(['role:doctor'])->group(function () {
+        Route::prefix('doctors')->middleware(['role.jwt:doctor'])->group(function () {
             Route::patch('/profile', [ProfileController::class, 'updateDoctorProfile']);
 
             Route::apiResource('specialties', DoctorSpecialtyController::class)->except(['show', 'update']);

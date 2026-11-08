@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Admin\ScheduleRequest;
 
+use App\Enums\ScheduleRequestStatus;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Enums\ScheduleRequestStatus;
 use Illuminate\Validation\Rule;
 
 class UpdateScheduleRequest extends FormRequest
