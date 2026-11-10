@@ -29,7 +29,7 @@ class DoctorController extends BaseController
 
     public function getDoctorDetails(int $id)
     {
-        $doctor = Doctor::whereActive()->with(['user', 'specializations'])->find($id);
+        $doctor = Doctor::whereActive()->with(['user', 'specializations', 'qualifications'])->find($id);
         if (! $doctor) {
             return $this->error('Doctor not found', 404);
         }
@@ -46,12 +46,12 @@ class DoctorController extends BaseController
         if (strlen($q) < 3) {
             return $this->error('Query too short', 400);
         }
-        $specializations = Specialization::where('name', 'like', '%'.$q.'%')->orWhere('description', 'like', '%'.$q.'%')->get();
+        $specializations = Specialization::where('name', 'like', '%' . $q . '%')->orWhere('description', 'like', '%' . $q . '%')->get();
 
         $doctors = Doctor::whereActive()->whereHas('specializations', function ($query) use ($specializations) {
             $query->whereIn('specialization_id', $specializations->pluck('id'));
         })->orWhereHas('user', function ($query) use ($q) {
-            $query->where('name', 'like', '%'.$q.'%')->orWhere('bio', 'like', '%'.$q.'%');
+            $query->where('name', 'like', '%' . $q . '%')->orWhere('bio', 'like', '%' . $q . '%');
         })->with('user')->limit(10)->get();
 
         return $this->success([
