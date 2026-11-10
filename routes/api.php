@@ -1,19 +1,25 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\V1\AuthController;
+use App\Http\Controllers\V1\ProfileController;
+
 use App\Http\Controllers\V1\Admin\DoctorController as AdminDoctorController;
 use App\Http\Controllers\V1\Admin\ScheduleController as AdminScheduleController;
 use App\Http\Controllers\V1\Admin\ScheduleRequestController as AdminScheduleRequestController;
-use App\Http\Controllers\V1\AuthController;
+
 use App\Http\Controllers\V1\Doctor\DoctorSpecialtyController;
 use App\Http\Controllers\V1\Doctor\QualificationController;
-use App\Http\Controllers\V1\Doctor\ScheduleController;
-use App\Http\Controllers\V1\Doctor\ScheduleOverrideController;
+use App\Http\Controllers\V1\Doctor\ScheduleController as DoctorScheduleController;
+use App\Http\Controllers\V1\Doctor\ScheduleRequestController as DoctorScheduleRequestController;
+// use App\Http\Controllers\V1\Doctor\ScheduleOverrideController;
+
 use App\Http\Controllers\V1\Patient\AllergyController;
 use App\Http\Controllers\V1\Patient\ConditionController;
 use App\Http\Controllers\V1\Patient\ContactController;
-use App\Http\Controllers\V1\ProfileController;
+
 use App\Http\Controllers\V1\Public\DoctorController as PublicDoctorController;
-use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
@@ -50,8 +56,9 @@ Route::prefix('v1')->group(function () {
 
             Route::apiResource('specialties', DoctorSpecialtyController::class)->except(['show', 'update']);
             Route::apiResource('qualifications', QualificationController::class);
-            Route::apiResource('schedules', ScheduleController::class);
-            Route::apiResource('schedule-overrides', ScheduleOverrideController::class);
+            Route::apiResource('schedules', DoctorScheduleController::class)->only(['index', 'show']);
+            Route::apiResource('schedule-requests', DoctorScheduleRequestController::class);
+            // Route::apiResource('schedule-overrides', ScheduleOverrideController::class);
         });
     });
 
