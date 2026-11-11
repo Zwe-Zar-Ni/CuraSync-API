@@ -17,7 +17,11 @@ class UpdateQualificationRequest extends FormRequest
             'name' => ['required', 'string', 'max:100'],
             'institution' => ['required', 'string', 'max:200'],
             'year' => ['required', 'integer', 'digits:4'],
-            'certificate_url' => ['nullable', 'url', 'max:255'],
+            'certificate_file' => [
+                'nullable',
+                'file',
+                'max:4096',
+            ],
         ];
     }
 }

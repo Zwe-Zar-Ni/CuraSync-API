@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -32,6 +33,13 @@ class User extends Authenticatable
             'password' => 'hashed',
             'token_version' => 'integer',
         ];
+    }
+
+    protected function profileUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => $value ? env('APP_URL', 'https://cura.solvere.website') . '/storage/' . $value : null,
+        );
     }
 
     public function patient(): HasOne

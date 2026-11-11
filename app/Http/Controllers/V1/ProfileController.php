@@ -9,6 +9,7 @@ use App\Http\Resources\ProfileResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends BaseController
 {
@@ -28,6 +29,14 @@ class ProfileController extends BaseController
             $request->only(['date_of_birth', 'gender', 'blood_type'])
         );
 
+        if ($request->file('profile_image')) {
+            $path = $request->file('profile_image')->store('profiles', 'public');
+            if ($path) {
+                $user->profile_url = $path;
+                $user->update();
+            }
+        }
+
         return $this->success(new ProfileResource($user), 'Patient profile updated successfully.');
     }
 
@@ -42,6 +51,14 @@ class ProfileController extends BaseController
             $request->only(['license_number', 'standard_consultation_fee', 'bio'])
         );
 
+        if ($request->file('profile_image')) {
+            $path = $request->file('profile_image')->store('profiles', 'public');
+            if ($path) {
+                $user->profile_url = $path;
+                $user->update();
+            }
+        }
+
         return $this->success(new ProfileResource($user), 'Doctor profile updated successfully.');
     }
 
@@ -49,7 +66,6 @@ class ProfileController extends BaseController
     {
         $user->name = $data['name'] ?? $user->name;
         $user->phone_number = $data['phone_number'] ?? $user->phone_number;
-        $user->profile_url = $data['profile_url'] ?? $user->profile_url;
         $user->update();
     }
 }

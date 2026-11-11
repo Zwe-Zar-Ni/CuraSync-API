@@ -17,7 +17,14 @@ class UpdatePatientProfileRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string', 'max:255'],
             'phone_number' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'profile_url' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'profile_image' => [
+                'sometimes',
+                'nullable',
+                'file',
+                'max:2048',
+                'mimes:jpg,jpeg,png,webp',
+                'extensions:jpg,jpeg,png,webp'
+            ],
             'date_of_birth' => ['sometimes', 'nullable', 'date'],
             'gender' => ['sometimes', 'nullable', Rule::in(['M', 'F'])],
             'blood_type' => ['sometimes', 'nullable', 'string', 'max:3'],
