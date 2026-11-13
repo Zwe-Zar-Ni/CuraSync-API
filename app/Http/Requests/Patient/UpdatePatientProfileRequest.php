@@ -17,13 +17,10 @@ class UpdatePatientProfileRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string', 'max:255'],
             'phone_number' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'profile_image' => [
+            'profile_image_id' => [
                 'sometimes',
                 'nullable',
-                'file',
-                'max:2048',
-                'mimes:jpg,jpeg,png,webp',
-                'extensions:jpg,jpeg,png,webp'
+                'integer'
             ],
             'date_of_birth' => ['sometimes', 'nullable', 'date'],
             'gender' => ['sometimes', 'nullable', Rule::in(['M', 'F'])],

@@ -21,7 +21,7 @@ class DoctorController extends BaseController
     public function getSpecializationDetails(int $id)
     {
         $specialization = Specialization::with(['doctors' => function ($q) {
-            return $q->whereActive()->with('user');
+            return $q->whereActive()->with('user.profile_image');
         }])->find($id);
 
         return $this->success(new SpecializationResource($specialization));

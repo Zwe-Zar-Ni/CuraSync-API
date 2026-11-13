@@ -8,7 +8,7 @@ use App\Http\Controllers\V1\ProfileController;
 use App\Http\Controllers\V1\Admin\DoctorController as AdminDoctorController;
 use App\Http\Controllers\V1\Admin\ScheduleController as AdminScheduleController;
 use App\Http\Controllers\V1\Admin\ScheduleRequestController as AdminScheduleRequestController;
-
+use App\Http\Controllers\V1\AttachmentController;
 use App\Http\Controllers\V1\Doctor\DoctorSpecialtyController;
 use App\Http\Controllers\V1\Doctor\QualificationController;
 use App\Http\Controllers\V1\Doctor\ScheduleController as DoctorScheduleController;
@@ -32,6 +32,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::get('/me', [ProfileController::class, 'show']);
+        Route::post('/attachments', [AttachmentController::class, 'store']);
 
         Route::prefix('admin')->middleware(['role.jwt:admin'])->group(function () {
             Route::get('/doctors', [AdminDoctorController::class, 'index']);

@@ -81,8 +81,8 @@ class DoctorResource extends JsonResource
             'phone_number' => $this->whenLoaded('user', function () {
                 return $this->user->phone_number;
             }),
-            'profile_url' => $this->whenLoaded('user', function () {
-                return $this->user->profile_url;
+            'profile_image' => $this->whenLoaded('user', function () {
+                return $this->user->profile_image ? $this->user->profile_image->url : null;
             }),
         ];
     }

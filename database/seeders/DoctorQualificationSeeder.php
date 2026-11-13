@@ -29,7 +29,7 @@ class DoctorQualificationSeeder extends Seeder
                             'year' => $qualification['year'],
                         ],
                         [
-                            'certificate_url' => $qualification['certificate_url'] ?? null,
+                            'certificate_id' => null,
                         ],
                     );
                 }
@@ -76,7 +76,6 @@ class DoctorQualificationSeeder extends Seeder
                     'name' => 'Fellowship in Interventional Cardiology',
                     'institution' => 'National Heart Centre, Singapore',
                     'year' => 2016,
-                    'certificate_url' => 'https://cdn.curasync.test/certificates/aungmyat-fic.pdf',
                 ],
             ],
             'thidawin@curasync.test' => [

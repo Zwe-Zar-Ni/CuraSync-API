@@ -11,6 +11,7 @@ use App\Http\Resources\Doctor\ScheduleOverrideResource;
 use App\Models\DoctorScheduleOverride;
 use App\Models\DoctorScheduleOverrideRequest;
 use Carbon\Carbon;
+use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -18,7 +19,7 @@ class ScheduleOverrideController extends BaseController
 {
     private function getDoctorId(Request $request): int
     {
-        return $request->user()->doctor?->id ?? 0;
+        return $request->user()->doctor?->id ?? throw new Error('Doctor Not Found.');
     }
 
     public function index(Request $request): JsonResponse

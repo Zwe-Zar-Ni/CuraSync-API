@@ -20,7 +20,14 @@ class QualificationResource extends JsonResource
             'name' => $this->name,
             'institution' => $this->institution,
             'year' => $this->year,
-            'certificate_url' => $this->certificate_url,
+            'certificate_id' => $this->certificate_id,
+            'certificate' => $this->whenLoaded('certificate', function () {
+                return [
+                    'id' => $this->certificate->id,
+                    'url' => $this->certificate->url,
+                    'mime_type' => $this->certificate->mime_type,
+                ];
+            })
         ];
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\Patient\Condition\StoreConditionRequest;
 use App\Http\Requests\Patient\Condition\UpdateConditionRequest;
 use App\Http\Resources\Patient\ConditionResource;
 use App\Models\PatientCondition;
+use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class ConditionController extends BaseController
 {
     private function getPatientId(Request $request): int
     {
-        return $request->user()->patient?->id ?? 0;
+        return $request->user()->patient?->id ?? throw new Error('Patient profile not found.');
     }
 
     public function index(Request $request): JsonResponse

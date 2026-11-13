@@ -35,13 +35,6 @@ class User extends Authenticatable
         ];
     }
 
-    protected function profileUrl(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => $value ? env('APP_URL', 'https://cura.solvere.website') . '/storage/' . $value : null,
-        );
-    }
-
     public function patient(): HasOne
     {
         return $this->hasOne(Patient::class);
@@ -50,5 +43,10 @@ class User extends Authenticatable
     public function doctor(): HasOne
     {
         return $this->hasOne(Doctor::class);
+    }
+
+    public function profile_image(): HasOne
+    {
+        return $this->hasOne(Attachment::class, 'id', 'profile_image_id');
     }
 }

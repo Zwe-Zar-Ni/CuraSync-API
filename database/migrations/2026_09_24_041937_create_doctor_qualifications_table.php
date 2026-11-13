@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name', 100);
             $table->string('institution', 200);
             $table->year('year');
-            $table->string('certificate_url')->nullable();
+            $table->unsignedInteger('certificate_id')->nullable();
             $table->timestamps();
         });
     }

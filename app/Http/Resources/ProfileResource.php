@@ -51,7 +51,9 @@ class ProfileResource extends JsonResource
                 'name' => $this->name,
                 'email' => $this->email,
                 'phone_number' => $this->phone_number,
-                'profile_url' => $this->profile_url,
+                'profile_image' => $this->whenLoaded('profile_image', function () {
+                    return $this->profile_image->url;
+                })
             ],
             'role' => $role,
             'profile' => $profile,

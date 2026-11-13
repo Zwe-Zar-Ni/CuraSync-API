@@ -7,6 +7,7 @@ use App\Http\Requests\Patient\Contact\StoreContactRequest;
 use App\Http\Requests\Patient\Contact\UpdateContactRequest;
 use App\Http\Resources\Patient\ContactResource;
 use App\Models\PatientContact;
+use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class ContactController extends BaseController
 {
     private function getPatientId(Request $request): int
     {
-        return $request->user()->patient?->id ?? 0;
+        return $request->user()->patient?->id ?? throw new Error('Patient profile not found.');
     }
 
     public function index(Request $request): JsonResponse

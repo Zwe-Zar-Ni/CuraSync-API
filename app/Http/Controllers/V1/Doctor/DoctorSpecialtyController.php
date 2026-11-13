@@ -6,6 +6,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\Specialty\StoreDoctorSpecialtyRequest;
 use App\Http\Resources\Doctor\DoctorSpecialtyResource;
 use App\Models\DoctorSpecialty;
+use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class DoctorSpecialtyController extends BaseController
 {
     private function getDoctorId(Request $request): int
     {
-        return $request->user()->doctor?->id ?? 0;
+        return $request->user()->doctor?->id ?? throw new Error('Doctor Not Found.');
     }
 
     public function index(Request $request): JsonResponse

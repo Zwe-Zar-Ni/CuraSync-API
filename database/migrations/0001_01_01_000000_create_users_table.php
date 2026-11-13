@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->string('name');
             $table->string('phone_number')->nullable();
-            $table->string('profile_url')->nullable();
+            $table->unsignedInteger('profile_image_id')->nullable();
             $table->unsignedInteger('token_version')->default(0);
 
             $table->timestamp('email_verified_at')->nullable();

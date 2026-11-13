@@ -9,13 +9,12 @@ use App\Http\Resources\ProfileResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ProfileController extends BaseController
 {
     public function show(Request $request): JsonResponse
     {
-        return $this->success(new ProfileResource($request->user()->load('doctor', 'patient')), 'Profile fetched successfully.');
+        return $this->success(new ProfileResource($request->user()->load('doctor', 'patient', 'profile_image')), 'Profile fetched successfully.');
     }
 
     public function updatePatientProfile(UpdatePatientProfileRequest $request): JsonResponse
@@ -29,15 +28,7 @@ class ProfileController extends BaseController
             $request->only(['date_of_birth', 'gender', 'blood_type'])
         );
 
-        if ($request->file('profile_image')) {
-            $path = $request->file('profile_image')->store('profiles', 'public');
-            if ($path) {
-                $user->profile_url = $path;
-                $user->update();
-            }
-        }
-
-        return $this->success(new ProfileResource($user), 'Patient profile updated successfully.');
+        return $this->success([], 'Patient profile updated successfully.');
     }
 
     public function updateDoctorProfile(UpdateDoctorProfileRequest $request): JsonResponse
@@ -51,21 +42,14 @@ class ProfileController extends BaseController
             $request->only(['license_number', 'standard_consultation_fee', 'bio'])
         );
 
-        if ($request->file('profile_image')) {
-            $path = $request->file('profile_image')->store('profiles', 'public');
-            if ($path) {
-                $user->profile_url = $path;
-                $user->update();
-            }
-        }
-
-        return $this->success(new ProfileResource($user), 'Doctor profile updated successfully.');
+        return $this->success([], 'Doctor profile updated successfully.');
     }
 
     private function updateUserProfile(User $user, array $data): void
     {
         $user->name = $data['name'] ?? $user->name;
         $user->phone_number = $data['phone_number'] ?? $user->phone_number;
+        $user->profile_image_id = $data['profile_image_id'] ?? $user->profile_image_id;
         $user->update();
     }
 }
