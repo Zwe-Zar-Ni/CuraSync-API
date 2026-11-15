@@ -37,6 +37,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('admin')->middleware(['role.jwt:admin'])->group(function () {
             Route::get('/doctors', [AdminDoctorController::class, 'index']);
             Route::get('/doctors/{id}', [AdminDoctorController::class, 'show']);
+            Route::put('/doctors/{id}', [AdminDoctorController::class, 'update']);
 
             Route::get('/schedule-requests', [AdminScheduleRequestController::class, 'index']);
             Route::put('/schedule-requests/{id}', [AdminScheduleRequestController::class, 'update']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V1\Admin;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\Admin\Doctor\UpdateDoctorRequest;
 use App\Http\Resources\Public\DoctorResource;
 use App\Models\Doctor;
 use Carbon\Carbon;
@@ -16,7 +17,7 @@ class DoctorController extends BaseController
         $query = Doctor::with('user')->latest();
         if ($request->filled('search')) {
             $query->whereHas('user', function ($query) use ($request) {
-                $query->where('name', 'like', '%'.$request->search.'%');
+                $query->where('name', 'like', '%' . $request->search . '%');
             });
         }
         if ($request->filled('status')) {
@@ -62,5 +63,17 @@ class DoctorController extends BaseController
         }
 
         return $this->success(DoctorResource::make($doctor));
+    }
+
+    public function update(UpdateDoctorRequest $request, int $id): JsonResponse
+    {
+        $doctor = Doctor::find($id);
+        if (! $doctor) {
+            return $this->error('Doctor not found.', 404);
+        }
+
+        $doctor->update($request->validated());
+
+        return $this->success([], 'Doctor updated successfully.');
     }
 }
