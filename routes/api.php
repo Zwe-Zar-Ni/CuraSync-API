@@ -4,20 +4,24 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ProfileController;
+use App\Http\Controllers\V1\AttachmentController;
 
 use App\Http\Controllers\V1\Admin\DoctorController as AdminDoctorController;
 use App\Http\Controllers\V1\Admin\ScheduleController as AdminScheduleController;
 use App\Http\Controllers\V1\Admin\ScheduleRequestController as AdminScheduleRequestController;
-use App\Http\Controllers\V1\AttachmentController;
+use App\Http\Controllers\V1\Admin\AppointmentController as AdminAppointmentController;
+
 use App\Http\Controllers\V1\Doctor\DoctorSpecialtyController;
 use App\Http\Controllers\V1\Doctor\QualificationController;
 use App\Http\Controllers\V1\Doctor\ScheduleController as DoctorScheduleController;
 use App\Http\Controllers\V1\Doctor\ScheduleRequestController as DoctorScheduleRequestController;
+use App\Http\Controllers\V1\Doctor\AppointmentController as DoctorAppointmentController;
 // use App\Http\Controllers\V1\Doctor\ScheduleOverrideController;
 
 use App\Http\Controllers\V1\Patient\AllergyController;
 use App\Http\Controllers\V1\Patient\ConditionController;
 use App\Http\Controllers\V1\Patient\ContactController;
+use App\Http\Controllers\V1\Patient\AppointmentController as PatientAppointmentController;
 
 use App\Http\Controllers\V1\Public\DoctorController as PublicDoctorController;
 
@@ -43,6 +47,8 @@ Route::prefix('v1')->group(function () {
             Route::put('/schedule-requests/{id}', [AdminScheduleRequestController::class, 'update']);
 
             Route::get('/doctor-schedules', [AdminScheduleController::class, 'index']);
+
+            Route::apiResource('appointments', AdminAppointmentController::class)->except(['destroy', 'store']);
         });
 
         Route::prefix('patients')->middleware(['role.jwt:patient'])->group(function () {
@@ -51,6 +57,8 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('allergies', AllergyController::class);
             Route::apiResource('conditions', ConditionController::class);
             Route::apiResource('contacts', ContactController::class);
+
+            Route::apiResource('appointments', PatientAppointmentController::class)->except(['destroy']);
         });
 
         Route::prefix('doctors')->middleware(['role.jwt:doctor'])->group(function () {
@@ -61,6 +69,8 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('schedules', DoctorScheduleController::class)->only(['index', 'show']);
             Route::apiResource('schedule-requests', DoctorScheduleRequestController::class);
             // Route::apiResource('schedule-overrides', ScheduleOverrideController::class);
+
+            Route::apiResource('appointments', DoctorAppointmentController::class)->except(['destroy', 'store']);
         });
     });
 

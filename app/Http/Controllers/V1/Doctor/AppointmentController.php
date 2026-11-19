@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Http\Controllers\V1\Doctor;
+
+use App\Enums\AppointmentStatus;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\Doctor\Appointment\UpdateAppointmentRequest;
+use App\Models\Appointment;
+use Error;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class AppointmentController extends BaseController
+{
+    private function getDoctorId(Request $request): int
+    {
+        return $request->user()->doctor?->id ?? throw new Error('Doctor Not Found.');
+    }
+
+    public function index(Request $request): JsonResponse
+    {
+        $doctorId = $this->getDoctorId($request);
+        $query = Appointment::where('doctor_id', $doctorId);
+        if ($request->filled('date')) {
+            $query->whereDate('date', $request->date);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        $appointments = $query->latest()->paginate(20);
+        return $this->success([
+            "data" => $appointments,
+            "meta" => $this->extractPaginationMeta($appointments)
+        ]);
+    }
+
+    public function show(Request $request, int $id): JsonResponse
+    {
+        $doctorId = $this->getDoctorId($request);
+        $appointment = Appointment::where('doctor_id', $doctorId)->with('patient.user')->find($id);
+        if (!$appointment) {
+            return $this->error([], "Appointment Not found.", 404);
+        }
+        return $this->success($appointment);
+    }
+
+    public function update(UpdateAppointmentRequest $request, int $id): JsonResponse
+    {
+        $req = $request->validated();
+        $doctorId = $this->getDoctorId($request);
+        $appointment = Appointment::where('doctor_id', $doctorId)->find($id);
+
+        if (!$appointment) {
+            return $this->error([], "Appointment not found.", 404);
+        }
+
+        if (
+            $appointment->status == AppointmentStatus::Completed
+            || $appointment->status == AppointmentStatus::Cancelled
+            || $appointment->status == AppointmentStatus::NoShow
+        ) {
+            return $this->error([], "Appointment cannot be updated.", 400);
+        }
+
+        $appointment->status = $req['status'];
+        $appointment->update();
+        return $this->success([], "Appointment status has been updated.");
+    }
+}
