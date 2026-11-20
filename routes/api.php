@@ -48,7 +48,7 @@ Route::prefix('v1')->group(function () {
 
             Route::get('/doctor-schedules', [AdminScheduleController::class, 'index']);
 
-            Route::apiResource('appointments', AdminAppointmentController::class)->except(['destroy', 'store']);
+            Route::apiResource('appointments', AdminAppointmentController::class)->except(['destroy', 'store'])->names('admin.appointments');
         });
 
         Route::prefix('patients')->middleware(['role.jwt:patient'])->group(function () {
@@ -58,8 +58,8 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('conditions', ConditionController::class);
             Route::apiResource('contacts', ContactController::class);
 
-            Route::get('/appointments/upcoming', [PatientAppointmentController::class, 'upcoming']);
-            Route::apiResource('appointments', PatientAppointmentController::class)->except(['destroy']);
+            Route::get('/appointments/upcoming', [PatientAppointmentController::class, 'upcoming'])->name('patient.appointments.upcoming');
+            Route::apiResource('appointments', PatientAppointmentController::class)->except(['destroy'])->names('patient.appointments');
         });
 
         Route::prefix('doctors')->middleware(['role.jwt:doctor'])->group(function () {
@@ -71,8 +71,8 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('schedule-requests', DoctorScheduleRequestController::class);
             // Route::apiResource('schedule-overrides', ScheduleOverrideController::class);
 
-            Route::get('/appointments/upcoming', [DoctorAppointmentController::class, 'upcoming']);
-            Route::apiResource('appointments', DoctorAppointmentController::class)->except(['destroy', 'store']);
+            Route::get('/appointments/upcoming', [DoctorAppointmentController::class, 'upcoming'])->name('doctor.appointments.upcoming');
+            Route::apiResource('appointments', DoctorAppointmentController::class)->except(['destroy', 'store'])->names('doctor.appointments');
         });
     });
 
