@@ -5,7 +5,9 @@ namespace App\Http\Controllers\V1\Doctor;
 use App\Enums\AppointmentStatus;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\Appointment\UpdateAppointmentRequest;
+use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
+use Carbon\Carbon;
 use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,9 +31,17 @@ class AppointmentController extends BaseController
         }
         $appointments = $query->latest()->paginate(20);
         return $this->success([
-            "data" => $appointments,
+            "data" => AppointmentResource::collection($appointments),
             "meta" => $this->extractPaginationMeta($appointments)
         ]);
+    }
+
+    public function upcoming(Request $request): JsonResponse
+    {
+        $doctorId = $this->getDoctorId($request);
+        $today = Carbon::today();
+        $appointments = Appointment::where('patient_id', $doctorId)->whereDate('date', '>=', $today)->whereIn('status', ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS'])->with('patient.user')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->get();
+        return $this->success(AppointmentResource::collection($appointments));
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -41,7 +51,7 @@ class AppointmentController extends BaseController
         if (!$appointment) {
             return $this->error([], "Appointment Not found.", 404);
         }
-        return $this->success($appointment);
+        return $this->success(new AppointmentResource($appointment));
     }
 
     public function update(UpdateAppointmentRequest $request, int $id): JsonResponse

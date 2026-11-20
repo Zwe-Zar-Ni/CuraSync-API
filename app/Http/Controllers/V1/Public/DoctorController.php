@@ -59,21 +59,4 @@ class DoctorController extends BaseController
             'doctors' => DoctorResource::collection($doctors),
         ]);
     }
-
-    // public function index(Request $request)
-    // {
-    //     $per_page = $request->per_page ?? 10;
-    //     $doctors = Doctor::whereActive()
-    //         ->whereSpecialization($request->specialization_id)
-    //         ->with(['user', 'specializations',])
-    //         ->orderBy(
-    //             'created_at',
-    //             'asc'
-    //         )->paginate($per_page);
-
-    //     return $this->success([
-    //         'data' => DoctorResource::collection($doctors),
-    //         'meta' => $this->extractPaginationMeta($doctors),
-    //     ]);
-    // }
 }

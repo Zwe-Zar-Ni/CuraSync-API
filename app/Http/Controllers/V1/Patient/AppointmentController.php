@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Patient;
 
 use App\Enums\AppointmentStatus;
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\DoctorSchedule;
@@ -25,9 +26,17 @@ class AppointmentController extends BaseController
         $patientId = $this->getPatientId($request);
         $appointments = Appointment::where('patient_id', $patientId)->with('doctor.user')->latest()->paginate(20);
         return $this->success([
-            "data" => $appointments,
+            "data" => AppointmentResource::collection($appointments),
             "meta" => $this->extractPaginationMeta($appointments)
         ]);
+    }
+
+    public function upcoming(Request $request): JsonResponse
+    {
+        $patientId = $this->getPatientId($request);
+        $today = Carbon::today();
+        $appointments = Appointment::where('patient_id', $patientId)->whereDate('date', '>=', $today)->whereIn('status', ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS'])->with('doctor.user')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->get();
+        return $this->success(AppointmentResource::collection($appointments));
     }
 
     public function store(Request $request): JsonResponse
@@ -97,7 +106,7 @@ class AppointmentController extends BaseController
             }
 
             // Create the appointment securely
-            $appointment = Appointment::create([
+            Appointment::create([
                 'doctor_id'        => $validated['doctor_id'],
                 'patient_id'       => $patientId,
                 'date'             => $validated['date'],
@@ -108,7 +117,7 @@ class AppointmentController extends BaseController
                 'consultation_fee' => $consultationFee,
             ]);
 
-            return $this->success($appointment, 'Appointment booked successfully.', 201);
+            return $this->success([], 'Appointment booked successfully.', 201);
         });
     }
 
@@ -119,7 +128,7 @@ class AppointmentController extends BaseController
         if (!$appointment) {
             return $this->error([], "Appointment not found.", 404);
         }
-        return $this->success($appointment);
+        return $this->success(new AppointmentResource($appointment));
     }
 
     public function update(Request $request, int $id): JsonResponse

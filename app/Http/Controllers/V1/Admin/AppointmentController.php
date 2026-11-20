@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1\Admin;
 use App\Enums\AppointmentStatus;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Admin\Appointment\UpdateAppointmentRequest;
+use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,7 +29,7 @@ class AppointmentController extends BaseController
         }
         $appointments = $query->latest()->paginate($request->query('per_page', 10));
         return $this->success([
-            "data" => $appointments,
+            "data" => AppointmentResource::collection($appointments),
             "meta" => $this->extractPaginationMeta($appointments)
         ]);
     }
@@ -39,7 +40,7 @@ class AppointmentController extends BaseController
         if (!$appointment) {
             return $this->error([], "Appointment not found.", 404);
         }
-        return $this->success($appointment);
+        return $this->success(new AppointmentResource($appointment));
     }
 
     public function update(UpdateAppointmentRequest $request, int $id): JsonResponse

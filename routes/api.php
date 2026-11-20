@@ -58,6 +58,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('conditions', ConditionController::class);
             Route::apiResource('contacts', ContactController::class);
 
+            Route::get('/appointments/upcoming', [PatientAppointmentController::class, 'upcoming']);
             Route::apiResource('appointments', PatientAppointmentController::class)->except(['destroy']);
         });
 
@@ -70,6 +71,7 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('schedule-requests', DoctorScheduleRequestController::class);
             // Route::apiResource('schedule-overrides', ScheduleOverrideController::class);
 
+            Route::get('/appointments/upcoming', [DoctorAppointmentController::class, 'upcoming']);
             Route::apiResource('appointments', DoctorAppointmentController::class)->except(['destroy', 'store']);
         });
     });
