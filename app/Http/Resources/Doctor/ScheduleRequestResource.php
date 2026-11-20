@@ -3,7 +3,7 @@
 namespace App\Http\Resources\Doctor;
 
 use App\Http\Resources\ProfileResource;
-use App\Http\Resources\Public\DoctorResource;
+use App\Http\Resources\DoctorResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

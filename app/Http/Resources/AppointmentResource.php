@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\Public\DoctorResource;
+use App\Http\Resources\DoctorResource;
 use App\Http\Resources\PatientResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

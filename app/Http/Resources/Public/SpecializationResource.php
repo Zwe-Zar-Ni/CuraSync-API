@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Http\Resources\DoctorResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,7 +17,7 @@ class SpecializationResource extends JsonResource
     {
         $doctors = $this->whenLoaded('doctors', function ($doctors) {
             return $doctors->map(function ($doctor) {
-                return DoctorResource::make($doctor);
+                return new DoctorResource($doctor);
             });
         });
 

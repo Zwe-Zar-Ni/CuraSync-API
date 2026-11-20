@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1\Public;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Resources\Public\DoctorResource;
+use App\Http\Resources\DoctorResource;
 use App\Http\Resources\Public\SpecializationResource;
 use App\Models\Doctor;
 use App\Models\Specialization;

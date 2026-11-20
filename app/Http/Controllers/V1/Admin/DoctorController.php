@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1\Admin;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Admin\Doctor\UpdateDoctorRequest;
-use App\Http\Resources\Public\DoctorResource;
+use App\Http\Resources\DoctorResource;
 use App\Models\Doctor;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -46,7 +46,7 @@ class DoctorController extends BaseController
         ], 'Doctors fetched successfully.');
     }
 
-    public function show($id): JsonResponse
+    public function show(int $id): JsonResponse
     {
         $lastSevenDays = Carbon::now()->subDays(7);
         $doctor = Doctor::with([

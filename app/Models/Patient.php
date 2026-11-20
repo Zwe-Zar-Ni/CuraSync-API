@@ -25,7 +25,7 @@ class Patient extends Model
         return $this->hasMany(PatientCondition::class);
     }
 
-    public function emergencyContacts(): HasMany
+    public function contacts(): HasMany
     {
         return $this->hasMany(PatientContact::class);
     }
