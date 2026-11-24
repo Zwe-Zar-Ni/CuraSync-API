@@ -6,7 +6,9 @@ use App\Enums\AppointmentStatus;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Doctor\Appointment\UpdateAppointmentRequest;
 use App\Http\Resources\AppointmentResource;
+use App\Http\Resources\PatientResource;
 use App\Models\Appointment;
+use App\Models\Patient;
 use Carbon\Carbon;
 use Error;
 use Illuminate\Http\JsonResponse;
@@ -40,18 +42,32 @@ class AppointmentController extends BaseController
     {
         $doctorId = $this->getDoctorId($request);
         $today = Carbon::today();
-        $appointments = Appointment::where('patient_id', $doctorId)->whereDate('date', '>=', $today)->whereIn('status', ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS'])->with('patient.user')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->get();
+        $appointments = Appointment::where('patient_id', $doctorId)->whereDate('date', '>=', $today)->whereIn('status', ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS'])->with('patient.user')->orderBy('date', 'desc')->orderBy('start_time', 'desc')->get();
         return $this->success(AppointmentResource::collection($appointments));
     }
 
     public function show(Request $request, int $id): JsonResponse
     {
         $doctorId = $this->getDoctorId($request);
-        $appointment = Appointment::where('doctor_id', $doctorId)->with('patient.user')->find($id);
+        $appointment = Appointment::where('doctor_id', $doctorId)->with(['patient.user', 'patient.allergies', 'patient.conditions', 'patient.contacts'])->find($id);
         if (!$appointment) {
             return $this->error([], "Appointment Not found.", 404);
         }
         return $this->success(new AppointmentResource($appointment));
+    }
+
+    public function appointmentsByPatient(Request $request, int $patient_id): JsonResponse
+    {
+        $doctorId = $this->getDoctorId($request);
+        $patient = Patient::with('user')->find($patient_id);
+        if (!$patient) {
+            return $this->error([], 'Patient Not Found.', 404);
+        }
+        $appointments = Appointment::where('patient_id', $patient->id)->where('doctor_id', $doctorId)->latest()->get();
+        return $this->success([
+            'appointments' => AppointmentResource::collection($appointments),
+            'patient' => new PatientResource($patient)
+        ]);
     }
 
     public function update(UpdateAppointmentRequest $request, int $id): JsonResponse

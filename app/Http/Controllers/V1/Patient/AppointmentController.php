@@ -13,6 +13,8 @@ use Error;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Patient\Appointment\StoreAppointmentRequest;
+use App\Http\Resources\DoctorResource;
 
 class AppointmentController extends BaseController
 {
@@ -35,26 +37,20 @@ class AppointmentController extends BaseController
     {
         $patientId = $this->getPatientId($request);
         $today = Carbon::today();
-        $appointments = Appointment::where('patient_id', $patientId)->whereDate('date', '>=', $today)->whereIn('status', ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS'])->with('doctor.user')->orderBy('date', 'asc')->orderBy('start_time', 'asc')->get();
+        $appointments = Appointment::where('patient_id', $patientId)->whereDate('date', '>=', $today)->whereIn('status', ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS'])->with('doctor.user')->orderBy('date', 'desc')->orderBy('start_time', 'desc')->get();
         return $this->success(AppointmentResource::collection($appointments));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreAppointmentRequest $request): JsonResponse
     {
-        // 1. Validate incoming request payload
-        $validated = $request->validate([
-            'doctor_id'        => 'required',
-            'date'             => 'required|date|after_or_equal:today',
-            'start_time'       => 'required|date_format:H:i',
-            'reason_for_visit' => 'required|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         $patientId = $this->getPatientId($request);
         $date = Carbon::parse($validated['date']);
         $dayOfWeek = $date->dayOfWeek; // 0 (Sunday) to 6 (Saturday)
         $startTime = $validated['start_time'];
 
-        // 2. Fetch the active schedule for this specific day of the week
+        // 1. Fetch the active schedule for this specific day of the week
         $schedule = DoctorSchedule::where('doctor_id', $validated['doctor_id'])
             ->where('day_of_week', $dayOfWeek)
             ->where('is_active', true)
@@ -66,14 +62,14 @@ class AppointmentController extends BaseController
             ], 422);
         }
 
-        // 3. Validate that start_time is within the schedule window
+        // 2. Validate that start_time is within the schedule window
         if ($startTime < $schedule->start_time || $startTime > $schedule->end_time) {
             return $this->error([
                 'message' => 'Selected time is outside the doctor working hours.'
             ], 422);
         }
 
-        // 4. Calculate expected end_time based on slot duration
+        // 3. Calculate expected end_time based on slot duration
         $endCarbon = Carbon::createFromFormat('H:i', $startTime)
             ->addMinutes($schedule->slot_duration_minutes);
         $endTime = $endCarbon->format('H:i');
@@ -84,11 +80,11 @@ class AppointmentController extends BaseController
             ], 422);
         }
 
-        // 5. Securely fetch consultation fee from the doctor profile
+        // 4. Securely fetch consultation fee from the doctor profile
         $doctorProfile = Doctor::findOrFail($validated['doctor_id']);
         $consultationFee = $doctorProfile->consultation_fee;
 
-        // 6. Execute inside a Database Transaction with Pessimistic Locking
+        // 5. Execute inside a Database Transaction with Pessimistic Locking
         return DB::transaction(function () use ($validated, $patientId, $startTime, $endTime, $consultationFee) {
 
             // Check for existing appointment with row-level lock (`lockForUpdate`)
@@ -131,6 +127,21 @@ class AppointmentController extends BaseController
         return $this->success(new AppointmentResource($appointment));
     }
 
+    public function appointmentsByDoctor(Request $request, int $doctor_id): JsonResponse
+    {
+        $patientId = $this->getPatientId($request);
+        $doctor = Doctor::with('user')->find($doctor_id);
+        if (!$doctor) {
+            return $this->error([], 'Doctor Not Found.', 404);
+        }
+        $appointments = Appointment::where('patient_id', $patientId)->where('doctor_id', $doctor->id)->latest()->get();
+        return $this->success([
+            'appointments' => AppointmentResource::collection($appointments),
+            'doctor' => new DoctorResource($doctor)
+        ]);
+    }
+
+    //! Cancels the appointment
     public function update(Request $request, int $id): JsonResponse
     {
         $patientId = $this->getPatientId($request);
