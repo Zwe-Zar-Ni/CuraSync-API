@@ -82,6 +82,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/specializations', [PublicDoctorController::class, 'getSpecializations']);
         Route::get('/specializations/{id}', [PublicDoctorController::class, 'getSpecializationDetails']);
         Route::get('/doctors/{id}', [PublicDoctorController::class, 'getDoctorDetails']);
+        Route::get('/doctors/{id}/schedules', [PublicDoctorController::class, 'doctorSchedules']);
+        Route::post('/doctors/{id}/schedules/slots', [PublicDoctorController::class, 'generateSlots']);
         Route::get('/search', [PublicDoctorController::class, 'search']);
     });
 });
