@@ -26,6 +26,7 @@ class StoreAppointmentRequest extends FormRequest
             'doctor_id'        => 'required',
             'date'             => 'required|date|after_or_equal:today',
             'start_time'       => 'required|date_format:H:i',
+            'end_time'       => 'required|date_format:H:i',
             'reason_for_visit' => 'required|string|max:500',
         ];
     }

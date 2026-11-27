@@ -7,7 +7,6 @@ use App\Http\Controllers\BaseController;
 use App\Http\Resources\AppointmentResource;
 use App\Models\Appointment;
 use App\Models\Doctor;
-use App\Models\DoctorSchedule;
 use Carbon\Carbon;
 use Error;
 use Illuminate\Http\JsonResponse;
@@ -43,74 +42,55 @@ class AppointmentController extends BaseController
 
     public function store(StoreAppointmentRequest $request): JsonResponse
     {
-        $validated = $request->validated();
 
         $patientId = $this->getPatientId($request);
-        $date = Carbon::parse($validated['date']);
+        $date = Carbon::parse($request->date);
         $dayOfWeek = $date->dayOfWeek; // 0 (Sunday) to 6 (Saturday)
-        $startTime = $validated['start_time'];
+        $startTime =  Carbon::createFromFormat('H:i', $request->start_time);
+        $endTime =  Carbon::createFromFormat('H:i', $request->end_time);
 
-        // 1. Fetch the active schedule for this specific day of the week
-        $schedule = DoctorSchedule::where('doctor_id', $validated['doctor_id'])
-            ->where('day_of_week', $dayOfWeek)
-            ->where('is_active', true)
-            ->first();
+        $doctor = Doctor::with(['schedules' => function ($query) {
+            $query->where('is_active', true);
+        }])->find($request->doctor_id);
+        if (!$doctor) {
+            return $this->error([], "Doctor not found.", 404);
+        }
 
+        $schedule = $doctor->schedules->firstWhere('day_of_week', $dayOfWeek);
         if (!$schedule) {
-            return $this->error([
-                'message' => 'The doctor is not available on this day.'
-            ], 422);
+            return $this->error([],  'The doctor is not available on this day.', 422);
         }
 
-        // 2. Validate that start_time is within the schedule window
-        if ($startTime < $schedule->start_time || $startTime > $schedule->end_time) {
-            return $this->error([
-                'message' => 'Selected time is outside the doctor working hours.'
-            ], 422);
+        $scheduleStartTime = Carbon::createFromFormat('H:i+', $schedule['start_time']);
+        $scheduleEndTime = Carbon::createFromFormat('H:i+', $schedule['end_time']);
+        if ($startTime->lt($scheduleStartTime) || $endTime->gt($scheduleEndTime)) {
+            return $this->error([], 'Selected time is outside the doctor working hours.', 422);
         }
 
-        // 3. Calculate expected end_time based on slot duration
-        $endCarbon = Carbon::createFromFormat('H:i', $startTime)
-            ->addMinutes($schedule->slot_duration_minutes);
-        $endTime = $endCarbon->format('H:i');
+        return DB::transaction(function () use ($request, $patientId, $startTime, $endTime, $doctor) {
 
-        if ($endTime > $schedule->end_time) {
-            return $this->error([
-                'message' => 'Appointment duration exceeds closing time.'
-            ], 422);
-        }
-
-        // 4. Securely fetch consultation fee from the doctor profile
-        $doctorProfile = Doctor::findOrFail($validated['doctor_id']);
-        $consultationFee = $doctorProfile->consultation_fee;
-
-        // 5. Execute inside a Database Transaction with Pessimistic Locking
-        return DB::transaction(function () use ($validated, $patientId, $startTime, $endTime, $consultationFee) {
-
-            // Check for existing appointment with row-level lock (`lockForUpdate`)
-            $existingAppointment = Appointment::where('doctor_id', $validated['doctor_id'])
-                ->where('date', $validated['date'])
+            //? Check for existing appointment with row-level lock (`lockForUpdate`)
+            $existingAppointment = Appointment::where('doctor_id', $request->doctor_id)
+                ->where('date', $request->date)
                 ->where('start_time', $startTime)
                 ->whereNotIn('status', ['CANCELLED', 'NO_SHOW'])
                 ->lockForUpdate()
                 ->exists();
 
             if ($existingAppointment) {
-                return $this->error([
-                    'message' => 'This time slot has just been booked by another patient. Please select another slot.'
-                ], 422);
+                return $this->error([], 'This time slot has just been booked by another patient. Please select another slot.', 422);
             }
 
-            // Create the appointment securely
+            //? Create the appointment securely
             Appointment::create([
-                'doctor_id'        => $validated['doctor_id'],
+                'doctor_id'        => $request->doctor_id,
                 'patient_id'       => $patientId,
-                'date'             => $validated['date'],
+                'date'             => $request->date,
                 'start_time'       => $startTime,
                 'end_time'         => $endTime,
                 'status'           => AppointmentStatus::Confirmed,
-                'reason_for_visit' => $validated['reason_for_visit'],
-                'consultation_fee' => $consultationFee,
+                'reason_for_visit' => $request->reason_for_visit,
+                'consultation_fee' => $doctor->standard_consultation_fee ?? 0,
             ]);
 
             return $this->success([], 'Appointment booked successfully.', 201);
